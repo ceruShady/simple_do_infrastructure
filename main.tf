@@ -34,6 +34,6 @@ resource "digitalocean_firewall" "cluster_firewall" {
 
 resource "digitalocean_ssh_key" "admin_ssh_key" {
   name       = "do-admin-key"
-  public_key = file(var.ssh_key_location)
+  public_key = sensitive(file(var.ssh_key_location))
 }
 
