@@ -10,19 +10,18 @@ on:
   workflow_dispatch:
 
 jobs:
-  tfsec:
-    name: tfsec
+  scan:
     runs-on: ubuntu-latest
 
     steps:
       - name: Clone repo
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
 
       # - name: tfsec
       #   uses: aquasecurity/tfsec-action@v1.0.0
 
       - name: Run Trivy vulnerability scan
-        uses: aquasecurity/trivy-action@master 
+        uses: aquasecurity/trivy-action@0.28.0 
           with:
             scan-type: 'fs'
             scan-ref: '.' 
