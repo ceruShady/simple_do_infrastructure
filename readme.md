@@ -98,6 +98,14 @@ terraform state list
 
 * worker_num: Number of worker instances to provision. Only 1 worker instance will be provisioned by default
 
+## Code scanning with Static Code Analysis tools
+
+Tools such as Checkov or tfsec(soon to be integrated to Trivy) can be employed to identify potential vulnerabilities and policy violations before deployment. Scanning tools can be integrated to CI/CD pipeline to carry out scan operations after each commit.
+
+In this project 2 GitHub actions workflows are created to scan the Terraform files using either Checkov or Trivy and will upload a sarif report at the end of the workflow. The report can be view in the Security section of the GitHub repo, in the Code Scanning page
+
+Note that to enable code scanning in GitHub, the repo needs to be public or Organization-owned repositories on GitHub Team with GitHub Code Security enabled, in addition, workflow permission needs to have read and write permissions
+
 ## Security practices
 ### Modifying state file
 Terraform remembers the state of the infrastructure and configuration by storing the data into state files typically named "terraform.tfstate" in JSON. Without a state file, Terraform operations will start from scratch. 
@@ -112,6 +120,8 @@ Generated state file should store securely in remote cloud (or remote backend fo
 * Encrypt state file: State files should be encrypted as an added layer of security. You should understand the encryption practices of your cloud storage of choice. Most if not all of the mainstream cloud storage providers provides encryption at rest (DigitalOcean Space, AWS S3 etc), if your cloud storage of choice does not do file encryption, you can consider encrypting your files before storing, however you will have to decrypt your files before you can use them.
 * Lock state file: When handling state files in a collaborative environment, it is important to implement state file lock to prevent concurrent operations and potential state file corruption. Method to enable state file lock will differ based on your cloud storage of choice.
 * Versioning state file: State file should be versioned to track changes and allow for state rollbacks. To execute a rollback, the current version of "terraform.tfstate" should be backup in another location then replaced with an older version, then run "terraform plan" to show difference between the desired state based on "terraform.tfstate" file and the current configuration, and "terraform apply" to execute the rollback.
+
+### Other security practices
 * Separate secrets from your Terraform code: Avoid hardcoding sensitive information in your Terraform code, you can use the (sensitive()) function in resources or "sensitive=true" in variable or output to prevent sensitive data from being displayed in output from plan or apply operations. It is also recommended to use secrets storage functionality provided by your CI/CD tool or cloud provider to store sensitive information then feed it to Terraform command as needed.
-* Security scan on Terraform files: Scanning tools such as Checkov or tfsec(soon to be integrated to Trivy) can be employed as static code analysis tool to identify potential vulnerabilities and policy violations before deployment. Scanning tools can be integrated to CI/CD pipeline to carry out scan operations after each commit.
+* Security scan on Terraform files: Refer to the "Code scanning with Static Code Analysis tools" for more information
 * Performing drift detection: Executing "terraform plan" after provisioning the infrastructure will compare the configuration in state file against the current infrastructure configuration. Any drift will be displayed as output.
