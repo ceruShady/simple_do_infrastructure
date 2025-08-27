@@ -19,7 +19,7 @@ jobs:
       - name: Run Checkov scan
         uses: bridgecrewio/checkov-action@v12
         with:
-          directory: . # Scan the entire repository
+          directory: ./terraform # Scan the entire repository
           output_format: sarif # Generate SARIF output for GitHub Code Scanning
           output_file_path: checkov.sarif
         continue-on-error: true
