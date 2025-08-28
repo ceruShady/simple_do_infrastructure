@@ -1,0 +1,9 @@
+all:
+    vars:
+        ansible_connection: ssh
+        ansible_user: root
+        ansible_ssh_private_key: ${ssh_private_key}
+    hosts:
+        master:
+            ansible_host: ${master_ip}
+            
