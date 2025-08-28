@@ -2,3 +2,5 @@
 secrets
 *.lock.hcl
 plans
+*.tfstate*
+temp.txt
