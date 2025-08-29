@@ -1,6 +1,22 @@
+# General DO resource variables
+
+variable "do_token" {
+  description = "Digital Ocean token"
+}
+
+variable "ssh_key_location" {
+  description = "Location of ssh public key"
+  default     = "./secrets/do-admin-key.pub"
+}
+
 variable "do_region" {
   description = "Region for Digital Ocean resources"
   default     = "sgp1"
+}
+
+variable "worker_num" {
+  description = "Number of worker nodes"
+  default     = 2
 }
 
 variable "image_master" {
@@ -23,24 +39,37 @@ variable "size_worker" {
   default     = "s-1vcpu-1gb"
 }
 
-variable "do_token" {
-  description = "Digital Ocean token"
+# DO spaces variables
+
+#variable "do_spaces_access" {
+#  description = "Access ID for Digital Ocean Spaces"
+#}
+
+#variable "do_spaces_secrets" {
+#  description = "Secret key for Digital Ocean Spaces"
+#}
+
+variable "do_spaces_bucket_name" {
+  description = "Name of Digital Ocean Spaces bucket"
+  default     = "my-do-bucket"
 }
 
-variable "ssh_key_location" {
-  description = "Location of ssh public key"
-  default     = "./secrets/do-admin-key.pub"
+variable "terraform_state_filename" {
+  description = "Name of Terraform state file"
+  default     = "terraform.tfstate"
 }
 
-variable "do_spaces_access" {
-  description = "Access ID for Digital Ocean Spaces"
+variable "ansible_invetory_filename" {
+  description = "Name of Ansible inventory file"
+  default     = "inventory.yaml"
 }
 
-variable "do_spaces_secrets" {
-  description = "Secret key for Digital Ocean Spaces"
+variable "ansible_inventory_location" {
+  description = "Location of Ansible inventory file with relation to current working directory"
+  default     = "../ansible/inventory.yaml"
 }
 
-variable "worker_num" {
-  description = "Number of worker nodes"
-  default     = 1
+variable "ansible_inventory_content_type" {
+  description = "MIME type of Ansible inventory file"
+  default     = "application/yaml"
 }
