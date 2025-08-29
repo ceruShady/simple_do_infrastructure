@@ -4,6 +4,7 @@ resource "digitalocean_droplet" "master" {
   region   = var.do_region
   size     = var.size_master
   ssh_keys = [digitalocean_ssh_key.admin_ssh_key.id]
+  tags = ["master"]
 }
 
 resource "digitalocean_droplet" "workers" {
@@ -13,23 +14,26 @@ resource "digitalocean_droplet" "workers" {
   region   = var.do_region
   size     = var.size_worker
   ssh_keys = [digitalocean_ssh_key.admin_ssh_key.id]
+  tags = ["worker"]
 }
 
 output "worker_ids" {
   value = digitalocean_droplet.workers.*.id
 }
 
+output "worker_ids_arr" {
+  value = join(", ", [for i in digitalocean_droplet.workers : i.id])
+}
+
 resource "digitalocean_firewall" "cluster_firewall" {
   name = "cluster-firewall"
+  tags = ["master", "worker"]
   inbound_rule {
     protocol           = "tcp"
     port_range         = "22"
     source_addresses   = ["0.0.0.0/0"]
     source_droplet_ids = [digitalocean_droplet.master.id] # Allow SSH from master
   }
-  # ... other rules ...
-  droplet_ids = [digitalocean_droplet.master.id,
-  join(", ", [for i in digitalocean_droplet.workers : i.id])]
 }
 
 resource "local_file" "inventory" {
