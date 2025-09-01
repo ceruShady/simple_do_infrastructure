@@ -24,3 +24,8 @@ jobs:
         id: validate
         run: terraform validate
         working-directory: ./terraform
+
+      - name: Run Terraform plan
+        id: plan
+        run: terraform plan -var do_token=${{ secrets.DO_TOKEN }}
+        working-directory: ./terraform
