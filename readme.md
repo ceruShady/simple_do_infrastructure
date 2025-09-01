@@ -1,15 +1,82 @@
-# Simple Digital Ocean instructure with Terraform
+# Simple DigitalOcean instructure with Terraform
 
 ## Description
 This project demonstrates how to provision cloud infrastructure with DigitalOcean using Terraform IaC. By following the instructions in the following sections, you should be able to provision 2 Droplet instances, a master and a worker instance, with the ability to SSH connect to each instances
 
+## Terraform state files
+Terraform remembers the state of the infrastructure and configuration by storing the data into state files typically named "terraform.tfstate" in JSON. Without a state file, Terraform operations will start from scratch. 
+
+## Local backend
+Terraform by default creates state file locally on the computer that runs the Terraform apply command. This is referred as local backend, and is suitable for individual developer and state file is locked so that simultaneous Terraform processes won't corrupt the file.
+
+## Remote backend
+Remote backend is a configuration where state file is stored in a remote location to allow for collaboration with multiple developers. Commercial cloud storage such as AWS S3 offers encryption for stored files, versioning to allow state rollback, and state lock to prevent more than 1 Terraform processes from modifying and corrupting the state file.
+
 ## Setting up
 
-## [TODO] Setting up for Terraform remote backend
+## Pre-requisites for Terraform remote backend
+DigitalOcean Spaces can be used as remote backend. You will require the following before you can continue:
+* Your DigitalOcean Spaces Full Access key ID and Secrets
+* A DigitalOcean Spaces bucket already created, which name will be referenced later
 
-## [TODO] Enabling versioning
 
-## [TODO] Commands
+## Configuring Terraform for remote backend
+You can reference to "backend.tf" for the contents to configure Terraform for remote backend. You will notice that this file does not use variables as it is not allowed by Terraform, so 1 of the ways is to hardcode the information into the file. You can run the following command to reconfigure Terraform for remote backend, you will be prompted for necessary information that is missing in the file
+```
+terraform init
+```
+
+If you wish to keep sensitive information out of the file, you can refer to the following 3 sections for methods to circumvent this.
+
+Note that the line "use_lockfile = true" line enables state lock.
+
+## Using "-backend-config" flag
+For Terraform process that runs locally, you can use the "-backend-config" flag
+```
+terraform init -reconfigure -backend-config="<YOUR_BUCKET_NAME>" -backend-config="access_key=<YOUR_BUCKET_ACCESS_KEY>" -backend-config="secret_key=<YOUR_BUCKET_SECRET_KEY>"
+```
+## Using "-backend-config" flag with GitHub secrets
+For Terraform process running in GitHub actions workflow, you can reference the information using GitHub secrets
+```
+- name: Terraform Init
+    run: |
+        terraform init \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            -backend-config="secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+```
+## Creating backend file before running 
+You can also create the backend Terraform file in the workflow before running the "terraform init" command
+
+## Enabling versioning
+To enable versioning, run the following command.
+```
+aws s3api put-bucket-versioning --bucket <YOUR_BUCKET_NAME> --endpoint=<YOUR_ENDPOINT> --versioning-configuration Status=Enabled
+```
+Note that endpoint provided by DigitalOcean includes the name of bucket, while the endpoint require in the command only need the region (e.g. https://sgp1.digitaloceanspaces.com)
+
+This command works because DigitalOcean Spaces is AWS S3-Compatible
+
+## Additional commands related to file versioning
+Command to list the version of the file
+```
+aws s3api list-object-versions --prefix <FILENAME> --bucket <YOUR_BUCKET_NAME> --endpoint=<YOUR_ENDPOINT>
+```
+
+Command to replace the current file with a previous version
+```
+aws s3api copy-object --bucket <YOUR_BUCKET_NAME> --endpoint=<YOUR_ENDPOINT> --copy-source "<YOUR_BUCKET_NAME>/<FILENAME>?versionId=<VERSION_ID>" --key <FILENAME>
+```
+Example of file for "--copy-source"
+```
+"my-do-bucket/terraform.tfstate?versionId=SO5MJfTrUD52XELF1x008cEj0lZtcYx"
+```
+
+Command to delete a specific version of the file
+```
+aws s3api delete-object --bucket <YOUR_BUCKET_NAME> --endpoint=<YOUR_ENDPOINT> --key <FILENAME> --version-id <VERSION_ID>
+
+```
 
 ### Cloning the project
 Clone the project to your pc
@@ -115,8 +182,6 @@ Note that to enable code scanning in GitHub, the repo needs to be public or Orga
 
 ## Security practices
 ### Modifying state file
-Terraform remembers the state of the infrastructure and configuration by storing the data into state files typically named "terraform.tfstate" in JSON. Without a state file, Terraform operations will start from scratch. 
-
 While it is possible to directly modify the state file to make changes to the infrastructure, it is recommended to use "terraform state" command to make simple changes, or modify the Terraform files then apply them with the "terraform apply" command"
 
 ### Executing Terraform programmatically
