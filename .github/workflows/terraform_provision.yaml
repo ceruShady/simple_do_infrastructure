@@ -18,4 +18,4 @@ jobs:
       - name: Run Terraform Init
         id: init
         run: terraform init -reconfigure -backend-config="bucket=${{ secrets.TF_BUCKET_NAME }}" -backend-config="access_key=${{ secrets.TF_BUCKET_ACCESS }}" -backend-config="secret_key=${{ secrets.TF_BUCKET_SECRET }}"
-    
+        working-directory: ./terraform
