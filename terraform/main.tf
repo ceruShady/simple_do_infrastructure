@@ -4,7 +4,7 @@ resource "digitalocean_droplet" "master" {
   region   = var.do_region
   size     = var.size_master
   ssh_keys = [digitalocean_ssh_key.admin_ssh_key.id]
-  tags = ["master"]
+  tags     = ["master"]
 }
 
 resource "digitalocean_droplet" "workers" {
@@ -14,7 +14,7 @@ resource "digitalocean_droplet" "workers" {
   region   = var.do_region
   size     = var.size_worker
   ssh_keys = [digitalocean_ssh_key.admin_ssh_key.id]
-  tags = ["worker"]
+  tags     = ["worker"]
 }
 
 output "worker_ids" {
