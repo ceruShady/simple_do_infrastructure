@@ -23,6 +23,8 @@ jobs:
       - name: Run Terraform validate
         id: validate
         run: terraform validate
+        working-directory: ./terraform
 
       - name: Test list current directory
         run: ls -al
+        working-directory: ./terraform
