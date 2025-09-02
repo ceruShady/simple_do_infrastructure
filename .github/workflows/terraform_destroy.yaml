@@ -25,7 +25,8 @@ jobs:
         run: terraform plan -destroy -var do_token=${{ secrets.DO_TOKEN }} -out ./destroyPlan.tfplan
         working-directory: ./terraform
 
-      - name: Test list
-        id: test
-        run: ls -al
+      - name: Run Terraform apply
+        id: apply
+        run: terraform apply ./destroyPlan.tfplan
         working-directory: ./terraform
+        
