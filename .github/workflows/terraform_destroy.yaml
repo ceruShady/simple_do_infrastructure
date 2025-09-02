@@ -1,0 +1,31 @@
+name: Destroy Terraform infrastructure
+
+on:
+  workflow_dispatch:
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.12.2"
+          
+      - name: Run Terraform Init
+        id: init
+        run: terraform init -reconfigure -backend-config="bucket=${{ secrets.TF_BUCKET_NAME }}" -backend-config="access_key=${{ secrets.TF_BUCKET_ACCESS }}" -backend-config="secret_key=${{ secrets.TF_BUCKET_SECRET }}"
+        working-directory: ./terraform
+        
+      - name: Run Terraform plan
+        id: plan
+        run: terraform plan -var do_token=${{ secrets.DO_TOKEN }} -out ./destroyPlan.tfplan
+        working-directory: ./terraform
+
+      - name: Test list
+        id: test
+        run: ls -al
+        working-directory: ./terraform
