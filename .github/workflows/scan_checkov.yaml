@@ -1,9 +1,9 @@
 name: Scan Terraform with Checkov
 
 on:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
   # pull_request:
   #   branches:
   #     - main
