@@ -1,4 +1,4 @@
-name: [Terraform scan] Scan with Checkov
+name: Terraform scan - Scan with Checkov
 
 on:
   push:

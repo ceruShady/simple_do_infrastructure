@@ -1,4 +1,4 @@
-name: [Terraform scan] Scan with Trivy
+name: Terraform scan - Scan with Trivy
 
 on:
   # push:

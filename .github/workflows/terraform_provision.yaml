@@ -1,4 +1,4 @@
-name: [Terraform Workflow] Provision infrastracture
+name: Terraform - Provision infrastracture
 
 on:
   workflow_dispatch:
