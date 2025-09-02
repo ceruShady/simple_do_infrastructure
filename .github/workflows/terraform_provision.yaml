@@ -30,7 +30,7 @@ jobs:
         run: terraform plan -var do_token=${{ secrets.DO_TOKEN }} -out ./provisionPlan.tfplan
         working-directory: ./terraform
 
-      - name: Test list directory
-        id: test
-        run: ls -al
+      - name: Run Terraform apply
+        id: apply
+        run: terraform apply ./provisionPlan.tfplan
         working-directory: ./terraform
