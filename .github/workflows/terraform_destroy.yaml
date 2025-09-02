@@ -1,4 +1,4 @@
-name: Destroy Terraform infrastructure
+name: [Terraform Workflow] Destroy infrastructure
 
 on:
   workflow_dispatch:
@@ -29,4 +29,3 @@ jobs:
         id: apply
         run: terraform apply ./destroyPlan.tfplan
         working-directory: ./terraform
-        
