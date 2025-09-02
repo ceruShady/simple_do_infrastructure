@@ -34,3 +34,19 @@ jobs:
         id: apply
         run: terraform apply ./provisionPlan.tfplan
         working-directory: ./terraform
+
+      - name: Test list
+        id: Test
+        run: ls -al
+
+      - name: cat inventory
+        id: cat
+        run: cat ./ansible/inventory.yaml
+
+      - name: cat key
+        id: key
+        run: ls ./terraform/secrets/
+
+  #ansible:
+    #steps:
+      #- name: Test step
