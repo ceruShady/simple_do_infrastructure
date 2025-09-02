@@ -1,4 +1,4 @@
-name: Initial Terraform provision
+name: Update Terraform infrastructure
 
 on:
   workflow_dispatch:
