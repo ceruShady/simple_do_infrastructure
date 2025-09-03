@@ -36,18 +36,6 @@ resource "digitalocean_firewall" "cluster_firewall" {
   }
 }
 
-resource "local_file" "inventory" {
-  filename = "../ansible/inventory.yaml"
-  content = templatefile("./templates/inventory.yaml.tftpl", {
-    master_ip       = digitalocean_droplet.master.ipv4_address
-    workers = digitalocean_droplet.workers.*
-    ssh_private_key = digitalocean_ssh_key.admin_ssh_key.fingerprint
-    ansible_user        = "root"
-    #master_domain = "code-server-${digitalocean_droplet.master.ipv4_address}.nip.io"
-  })
-  file_permission = "0444"
-}
-
 # Generate SSH key
 #resource "tls_private_key" "ssh_key_pair" {
 #  algorithm = "ED25519"
