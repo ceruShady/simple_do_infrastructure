@@ -1,3 +1,9 @@
+# SSH key 
+variable "ssh_pub_key" {
+  description = "SSH public key"
+  sensitive = true
+}
+
 # General DO resource variables
 
 variable "do_token" {
@@ -41,13 +47,13 @@ variable "size_worker" {
 
 # DO spaces variables
 
-#variable "do_spaces_access" {
-#  description = "Access ID for Digital Ocean Spaces"
-#}
+variable "do_spaces_access" {
+  description = "Access ID for Digital Ocean Spaces"
+}
 
-#variable "do_spaces_secrets" {
-#  description = "Secret key for Digital Ocean Spaces"
-#}
+variable "do_spaces_secret" {
+  description = "Secret key for Digital Ocean Spaces"
+}
 
 variable "do_spaces_bucket_name" {
   description = "Name of Digital Ocean Spaces bucket"
