@@ -1,7 +1,7 @@
 # SSH key 
 variable "ssh_pub_key" {
   description = "SSH public key"
-  sensitive = true
+  sensitive   = true
 }
 
 # General DO resource variables
@@ -78,4 +78,9 @@ variable "ansible_inventory_location" {
 variable "ansible_inventory_content_type" {
   description = "MIME type of Ansible inventory file"
   default     = "application/yaml"
+}
+
+variable "ansible_user_name" {
+  description = "Username for ansible"
+  default     = "root"
 }
