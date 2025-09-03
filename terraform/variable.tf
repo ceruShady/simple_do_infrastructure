@@ -57,7 +57,7 @@ variable "do_spaces_secret" {
 
 variable "do_spaces_bucket_name" {
   description = "Name of Digital Ocean Spaces bucket"
-  default     = "my-do-bucket"
+  #default     = "my-do-bucket"
 }
 
 variable "terraform_state_filename" {
