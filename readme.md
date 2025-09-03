@@ -14,6 +14,21 @@ Remote backend is a configuration where state file is stored in a remote locatio
 
 ## Setting up
 
+## Creating SSH key
+SSH key is required to enable connections to the provisioned infrastructure. You can create a SSH key locally with the following command
+```
+ssh-keygen
+```
+Newly created Key public and private key files will be located as ".ssh" directory by default of no name is set for the files. 
+
+You can create SSH key in DigitalOcean, then reference it by name in the Terraform files
+
+You can also create SSH keys through Terraform process then store them in a file locally. However if the process is executed through CI pipelines such GitHub actions, storage of generated key needs to be accounted for, ideally using a secret manager. Also note that information of the generated SSH key is visible in the state file when the key is referenced in the Terraform files
+
+Secure storage of private key information (and passphrase if set) is important to prevent un-authorized access to your infrastructure
+
+
+
 ## Pre-requisites for Terraform remote backend
 DigitalOcean Spaces can be used as remote backend. You will require the following before you can continue:
 * Your DigitalOcean Spaces Full Access key ID and Secrets
