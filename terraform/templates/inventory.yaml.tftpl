@@ -2,11 +2,29 @@ all:
     hosts:
         master:
             ansible_host: ${master_ip}
+            ip: ${master_ip}
+            access_ip: ${master_ip}
             ansible_user: ${ansible_user}
     %{ for instance in workers ~}
     ${instance.name}:
             ansible_host: ${instance.ipv4_address}
+            ip: ${instance.ipv4_address}
+            access_ip: ${instance.ipv4_address}
             ansible_user: ${ansible_user}
     %{ endfor ~}
-
+    children:
+        kube-master:
+            hosts:
+                master:
+        kube-node:
+            hosts:
+                %{ for instance in workers ~}
+                ${instance.name}:     
+                %{ endfor ~}
+        etcd:
+            hosts:
+                kube-master:
+                kube-node:
+        calico-rr:
+            hosts: {}
             
