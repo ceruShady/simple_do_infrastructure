@@ -17,23 +17,18 @@ resource "digitalocean_droplet" "workers" {
   tags     = ["worker"]
 }
 
+#resource "digitalocean_vpc" "k8s_vpc" {
+#  name     = var.vpc_name
+#  region   = var.region
+#  ip_range = "10.1.0.0/16"
+#}
+
 output "worker_ids" {
   value = digitalocean_droplet.workers.*.id
 }
 
 output "worker_ids_arr" {
   value = join(", ", [for i in digitalocean_droplet.workers : i.id])
-}
-
-resource "digitalocean_firewall" "cluster_firewall" {
-  name = "cluster-firewall"
-  tags = ["master", "worker"]
-  inbound_rule {
-    protocol           = "tcp"
-    port_range         = "22"
-    source_addresses   = ["0.0.0.0/0"]
-    source_droplet_ids = [digitalocean_droplet.master.id] # Allow SSH from master
-  }
 }
 
 # Generate SSH key
