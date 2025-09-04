@@ -37,7 +37,7 @@ variable "image_worker" {
 
 variable "size_master" {
   description = "Size configuration for master"
-  default     = "s-1vcpu-1gb"
+  default     = "s-1vcpu-2gb"
 }
 
 variable "size_worker" {
