@@ -30,8 +30,18 @@
         group: "{{ new_user }}"
         mode: "0700"
 
-    - name: Add public key to authorized_keys
-      ansible.builtin.authorized_key:
-        user: "{{ new_user }}" # Or specify the target user
-        state: present
-        key: "{{ ssh_public_key }}"
+    - name: Create authorized_keys file
+      ansible.builtin.lineinfile:
+      path: "~/.ssh/authorized_keys"
+      line: "{{ ssh_public_key }}"
+      create: yes  # Ensure the file is created if it doesn't exist
+      mode: '0600'
+      owner: "{{ new_user }}"
+      group: "{{ new_user }}"
+      regexp: "^{{ ssh_public_key }}"
+
+    #- name: Add public key to authorized_keys
+    #  ansible.posix.authorized_key:
+    #    user: "{{ new_user }}" # Or specify the target user
+    #    state: present
+    #    key: "{{ ssh_public_key }}"
