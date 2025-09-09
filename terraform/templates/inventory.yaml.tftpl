@@ -1,4 +1,4 @@
-kube-master:
+kube_master:
     hosts:
         master:
             ansible_host: ${master_ip}
@@ -6,7 +6,7 @@ kube-master:
             access_ip: ${master_ip}
             ansible_user: ${ansible_user}
 
-kube-node:
+kube_node:
     hosts:
     %{ for instance in workers ~}
     ${instance.name}:
@@ -18,8 +18,8 @@ kube-node:
 
 etcd:
     children:
-        kube-master:
-        kube-node:
+        kube_master:
+        kube_node:
 
 calico-rr:
     hosts: {}
