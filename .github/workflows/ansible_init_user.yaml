@@ -1,0 +1,45 @@
+name: Provision Server with Ansible
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  init:
+    name: Create ubuntu user
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Ansible
+        run: pip install ansible
+
+      - name: Configure Bucket credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.TF_BUCKET_ACCESS }}
+          aws-secret-access-key: ${{ secrets.TF_BUCKET_SECRET }}
+          aws-region: ${{ secrets.TF_BUCKET_REGION }} # e.g., nyc3, ams3
+
+      - name: Get inventory file
+        run: |
+          aws s3 cp s3://${{ secrets.TF_BUCKET_NAME }}/inventory.yaml ./inventory.yaml
+        env:
+          AWS_ENDPOINT_URL: ${{ secrets.TF_BUCKET_REGION_ENDPOINT_URL}} 
+
+      - name: Test list file
+        run: ls -al
+
+      - name: Test show file content
+        run: cat ./inventory.yaml
+
+      #- name: Run Ansible playbook
+      #  env:
+      #    ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
+      #    ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
+      #  run: ansible-playbook -i inventory.ini playbook.yml
