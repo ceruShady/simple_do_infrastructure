@@ -30,9 +30,12 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.TF_BUCKET_ACCESS }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_BUCKET_ACCESS }}
-          AWS_ENDPOINT_URL: ${{ secrets.TF_BUCKET_REGION_ENDPOINT_URL}} 
+          AWS_REGION: ${{ secrets.TF_BUCKET_REGION }}
+          #AWS_ENDPOINT_URL: ${{ secrets.TF_BUCKET_REGION_ENDPOINT_URL}} 
         run: |
-          aws s3 cp s3://${{ secrets.TF_BUCKET_NAME }}/inventory.yaml ./inventory.yaml
+          aws s3api get-object --bucket ${{ secrets.TF_BUCKET_NAME }} --endpoint ${{ secrets.TF_BUCKET_REGION_ENDPOINT_URL}}  --key inventory.yaml ./inventory.yaml
+          
+        # aws s3 cp s3://${{ secrets.TF_BUCKET_NAME }}/inventory.yaml ./inventory.yaml
 
       - name: Test list file
         run: ls -al
