@@ -54,4 +54,4 @@ jobs:
           ANSIBLE_USER: ${{ secrets.ANSIBLE_USER }}
           ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
           ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
-        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbook/createUser.yaml
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/createUser.yaml
