@@ -16,13 +16,13 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.TF_BUCKET_ACCESS }}
           aws-secret-access-key: ${{ secrets.TF_BUCKET_SECRET }}
-          aws-region: sgp1 # e.g., nyc3, ams3
+          aws-region: us-east-1 # e.g., nyc3, ams3
 
       - name: Get inventory file
         env:
           #AWS_ACCESS_KEY_ID: ${{ secrets.TF_BUCKET_ACCESS }}
           #AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_BUCKET_ACCESS }}
-          AWS_REGION: ${{ secrets.TF_BUCKET_REGION }}
+          #AWS_REGION: ${{ secrets.TF_BUCKET_REGION }}
           #AWS_ENDPOINT_URL: ${{ secrets.TF_BUCKET_REGION_ENDPOINT_URL}} 
         run: |
           aws s3api get-object --bucket ${{ secrets.TF_BUCKET_NAME }} --endpoint ${{ secrets.TF_BUCKET_REGION_ENDPOINT_URL}}  --key inventory.yaml ./inventory.yaml
