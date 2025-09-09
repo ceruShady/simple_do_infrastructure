@@ -16,7 +16,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.TF_BUCKET_ACCESS }}
           aws-secret-access-key: ${{ secrets.TF_BUCKET_SECRET }}
-          aws-region: us-east-1 # e.g., nyc3, ams3
+          aws-region: 'us-east-1' # e.g., nyc3, ams3
 
       - name: Get inventory file
         #env:
