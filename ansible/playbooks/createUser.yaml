@@ -1,5 +1,5 @@
 ---
-- hosts: master, workers
+- hosts: kube-master, kube-node
   become: yes
   vars:
     ansible_python_interpreter: /usr/bin/python3
