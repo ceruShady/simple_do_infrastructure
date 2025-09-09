@@ -1,4 +1,4 @@
-master:
+kube-master:
     hosts:
         master:
             ansible_host: ${master_ip}
@@ -6,7 +6,7 @@ master:
             access_ip: ${master_ip}
             ansible_user: ${ansible_user}
 
-workers:
+kube-node:
     hosts:
     %{ for instance in workers ~}
     ${instance.name}:
@@ -16,19 +16,11 @@ workers:
             ansible_user: ${ansible_user}
     %{ endfor ~}   
 
-kube-master:
-    children:
-        master:
-
-kube-node:
-    children:
-        workers:
-
 etcd:
     children:
         kube-master:
         kube-node:
-        
+
 calico-rr:
     hosts: {}
             
