@@ -1,6 +1,9 @@
 ---
+- name: Create new user in each nodes
 - hosts: master, workers
   become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
   tasks:
     - name: create the new user
       ansible.builtin.user:
