@@ -29,7 +29,7 @@
         mode: "0700"
 
     - name: Add public key to authorized_keys
-      ansible.posix.authorized_key:
+      ansible.builtin.authorized_key:
         user: "{{ new_user }}" # Or specify the target user
         state: present
         key: "{{ ssh_public_key }}"
