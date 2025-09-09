@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: master, workers
   become: yes
   tasks:
     - name: create the new user
