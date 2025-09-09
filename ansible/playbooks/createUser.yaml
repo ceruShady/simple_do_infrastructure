@@ -1,5 +1,4 @@
 ---
-- name: Create new user in each nodes
 - hosts: master, workers
   become: yes
   vars:
