@@ -22,6 +22,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_BUCKET_SECRET }}
           AWS_REGION: ${{ secrets.TF_BUCKET_REGION }}
         run: |
+          mkdir ./ansible/inventory
           aws s3api get-object --bucket ${{ secrets.TF_BUCKET_NAME }} --endpoint ${{ secrets.TF_BUCKET_REGION_ENDPOINT_URL}}  --key inventory.yaml ./ansible/inventory/inventory.yaml
           
         # aws s3 cp s3://${{ secrets.TF_BUCKET_NAME }}/inventory.yaml ./inventory.yaml
