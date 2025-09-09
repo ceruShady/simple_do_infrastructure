@@ -18,10 +18,10 @@ all:
                 master:
         kube-node:
             hosts:
-                %{ for instance in workers ~}
-                ${instance.name}:     
-                %{ endfor ~}
-        etcd:
+        %{ for instance in workers ~}
+        ${instance.name}:     
+        %{ endfor ~}
+etcd:
             hosts:
                 kube-master:
                 kube-node:
