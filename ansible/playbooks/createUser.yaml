@@ -1,0 +1,27 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: create the 'ubuntu' user
+      ansible.builtin.user:
+        name: "ubuntu"
+        state: present
+        password: "!"
+        shell: /bin/bash
+        groups: "sudo"
+        append: yes
+        create_home: yes
+
+    - name: Configure passwordless sudo for the new user
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers.d/{{ ubuntu }}
+        create: true
+        mode: '0440'
+        line: 'ubuntu ALL=(ALL) NOPASSWD:ALL'
+        validate: 'visudo -cf %s'
+
+    - name: allow 'ubuntu' user to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        line: 'ubuntu ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
