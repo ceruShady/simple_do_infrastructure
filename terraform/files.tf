@@ -1,6 +1,6 @@
 resource "local_file" "inventory" {
   filename = var.ansible_inventory_location
-  content = templatefile("./templates/inventory.yaml.tftpl", {
+  content = templatefile(var.ansible_inventory_template_location, {
     master_ip    = digitalocean_droplet.master.ipv4_address
     workers      = digitalocean_droplet.workers.*
     ansible_user = var.ansible_user_name
