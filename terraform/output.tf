@@ -9,3 +9,11 @@ output "worker_ip_addr" {
   value       = digitalocean_droplet.workers.*.ipv4_address
   sensitive   = true
 }
+
+output "worker_ids" {
+  value = digitalocean_droplet.workers.*.id
+}
+
+output "worker_ids_arr" {
+  value = join(", ", [for i in digitalocean_droplet.workers : i.id])
+}
