@@ -1,4 +1,4 @@
-name: Create k8s user with no password sudo rights
+name: Create Kubernetes cluster with Kubeadm
 
 on: 
   workflow_dispatch:
