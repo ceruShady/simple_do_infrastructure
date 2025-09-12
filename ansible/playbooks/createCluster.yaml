@@ -1,0 +1,51 @@
+---
+- hosts: kube_master
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: apt package update and upgrade
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: yes
+      environment:
+        UCF_FORCE_CONFFOLD: "1"
+    - name: apt install apt-transport-https curl
+      ansible.builtin.apt:
+        pkg:
+          - apt-transport-https
+          - curl
+        state: present
+        update_cache: true
+    - name: Install containerd
+      ansible.builtin.apt:
+        pkg:
+          - containerd 
+        state: present 
+    - name: Create containerd configuration directory
+      file:
+        path: /etc/containerd
+        state: directory
+        mode: '0755'
+    - name: Generate default containerd configuration and set SystemdCgroup to true
+      ansible.builtin.shell: |
+        containerd config default > /etc/containerd/config.toml
+        sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
+      args:
+        creates: /etc/containerd/config.toml
+    - name: Restart and set auto start containerd service
+      ansible.builtin.systemd:
+        name: containerd
+        state: restarted
+        enabled: yes
+      
+    - name: Disable swap
+      shell: swapoff -a
+      when: ansible_swaptotal_mb > 0 # Run if swap is enabled
+
+    - name: Remove swap reference from fstab
+      ansible.builtin.replace:
+        path: /etc/fstab
+        regexp: '^\s*[^#].*\s+swap\s+.*$'
+        replace: '# \1'
+        backup: yes 
