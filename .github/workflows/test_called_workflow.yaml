@@ -8,7 +8,8 @@ on:
 
 jobs:
   test_end:
-    name: Test task   
+    name: Test task 
+    runs-on: ubuntu-latest  
     steps:
       - name: Print end
         run: echo "end"

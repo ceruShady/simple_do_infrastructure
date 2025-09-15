@@ -5,7 +5,8 @@ on:
 
 jobs:
   test_start:
-    name: Test task   
+    name: Test task  
+    runs-on: ubuntu-latest 
     steps:
       - name: Print start
         run: echo "start"
