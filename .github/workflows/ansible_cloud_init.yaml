@@ -2,6 +2,7 @@ name: Create k8s user with no password sudo rights
 
 on: 
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   init:
