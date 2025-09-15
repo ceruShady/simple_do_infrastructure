@@ -9,8 +9,10 @@
       ansible.builtin.apt:
         update_cache: yes
         upgrade: yes
+        cache_valid_time: 86400 # Only run if cache is older than 24hrs
       environment:
         UCF_FORCE_CONFFOLD: "1"
+
     - name: apt install apt-transport-https curl
       ansible.builtin.apt:
         pkg:
@@ -18,22 +20,26 @@
           - curl
         state: present
         update_cache: true
+
     - name: Install containerd
       ansible.builtin.apt:
         pkg:
           - containerd 
         state: present 
+
     - name: Create containerd configuration directory
       file:
         path: /etc/containerd
         state: directory
         mode: '0755'
+
     - name: Generate default containerd configuration and set SystemdCgroup to true
       ansible.builtin.shell: |
         containerd config default > /etc/containerd/config.toml
         sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
       args:
         creates: /etc/containerd/config.toml
+
     - name: Restart and set auto start containerd service
       ansible.builtin.systemd:
         name: containerd
@@ -50,3 +56,20 @@
         regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
         replace: '#\1\2\3swap\4'
         backup: yes 
+
+    #- name: Download Kubernetes GPG key
+    #  ansible.builtin.get_url:
+    #    url: https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key # Adjust version as needed
+    #    dest: /tmp/kubernetes-release.key
+    #    mode: '0644'
+
+    #- name: Convert GPG key to dearmored format
+    #  ansible.builtin.shell: >
+    #    gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg /tmp/kubernetes-release.key
+    #  args:
+    #    creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    - name: Download Kubernetes GPG key and convert to dearmored format
+      ansible.builtin.shell:
+        curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+      args:
+        creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
