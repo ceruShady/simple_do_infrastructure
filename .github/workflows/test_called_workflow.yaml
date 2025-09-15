@@ -1,0 +1,14 @@
+name: Triggered Test
+
+on: 
+  workflow_run:
+    workflows: ["Trigger Test"]
+    types:
+      - completed
+
+jobs:
+  test_end:
+    name: Test task   
+    steps:
+      - name: Print end
+        run: echo "end"
