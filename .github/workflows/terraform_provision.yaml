@@ -38,4 +38,5 @@ jobs:
   cloud_init:
     needs: provision
     uses: ./.github/workflows/ansible_cloud_init.yaml
+    secrets: inherit
     
