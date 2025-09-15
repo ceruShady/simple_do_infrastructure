@@ -1,12 +1,12 @@
-name: Create k8s user with no password sudo rights
+name: Ansible - Cloud init
 
 on: 
   workflow_dispatch:
   workflow_call:
 
 jobs:
-  init:
-    name: Create ubuntu user
+  cloud-init:
+    name: Create user and k8s cluster with Ansible
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,20 +27,6 @@ jobs:
           aws s3api get-object --bucket ${{ secrets.TF_BUCKET_NAME }} --endpoint ${{ secrets.TF_BUCKET_REGION_ENDPOINT_URL}}  --key inventory.yaml ./ansible/inventory/inventory.yaml
           
         # aws s3 cp s3://${{ secrets.TF_BUCKET_NAME }}/inventory.yaml ./inventory.yaml
-
-      - name: Test list file
-        run: ls -al
-
-      - name: Test show file content
-        run: cat ./ansible/inventory/inventory.yaml
-
-      #- name: Set up Python
-      #  uses: actions/setup-python@v5
-      #  with:
-      #    python-version: '3.x'
-
-      #- name: Install Ansible
-      #  run: pip install ansible
 
       - name: Install Ansible
         shell: bash
