@@ -28,7 +28,7 @@
         state: present 
 
     - name: Create containerd configuration directory
-      file:
+      ansible.builtin.file:
         path: /etc/containerd
         state: directory
         mode: '0755'
@@ -142,24 +142,49 @@
       ansible.builtin.shell: kubeadm init --pod-network-cidr=192.168.0.0/16
       when: inventory_hostname in groups['kube_master']
 
+    - name: Create containerd configuration directory
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.kube"
+        state: directory
+        mode: '0755'
+      when: inventory_hostname in groups['kube_master']
+
     - name: Copy kubeconfig file
       ansible.builtin.shell: |
-        mkdir -p $HOME/.kube
         cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
         chown $(id -u):$(id -g) $HOME/.kube/config
-
-    - name: Setup Tiger operator for Calico CNI
-      ansible.builtin.shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/tigera-operator.yaml
       when: inventory_hostname in groups['kube_master']
+
+    - name: Setup Tigera operator for Calico CNI
+      ansible.builtin.shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/tigera-operator.yaml
+      register: tigera_output
+      when: inventory_hostname in groups['kube_master']
+
+    - name: Debug tigera output
+      ansible.builtin.debug:
+        var: tigera_output
+
+    - name: Pause for 30 seconds for Tigera operator setup
+      ansible.builtin.pause:
+        seconds: 30
 
     - name: Setup Calico CNI
       ansible.builtin.shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/custom-resources.yaml
+      register: calico_output
       when: inventory_hostname in groups['kube_master']
+
+    - name: Debug calico output
+      ansible.builtin.debug:
+        var: calico_output
 
     - name: Generate and save kubeadm join command
       ansible.builtin.shell: kubeadm token create --print-join-command
       register: kube_join_command
       when: inventory_hostname in groups['kube_master']
+
+    - name: Debug calico output
+      ansible.builtin.debug:
+        var: kube_join_command
 
     - name: Execute join with generated command from kube_master
       ansible.builtin.shell: "{{ hostvars[groups['kube_master']] }}"
