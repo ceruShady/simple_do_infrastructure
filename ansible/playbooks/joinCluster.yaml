@@ -15,5 +15,9 @@
         var: kube_join_command
 
     - name: Execute join with generated command from kube_master
-      ansible.builtin.shell: "{{ hostvars[groups['kube_master'] | last].kube_join_command }}"
+      ansible.builtin.shell: "{{ hostvars[groups['kube_master']].kube_join_command }}"
       when: inventory_hostname in groups['kube_node']
+
+    #- name:
+    #  set_fact:
+    #    kube_join_command
