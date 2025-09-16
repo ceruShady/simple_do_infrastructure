@@ -100,7 +100,7 @@
       ansible.builtin.apt:
         pkg:
           - kubelet 
-          - kubedm
+          - kubeadm
           - kubectl 
         state: present
         update_cache: true
