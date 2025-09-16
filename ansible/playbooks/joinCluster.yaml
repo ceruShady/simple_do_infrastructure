@@ -9,14 +9,21 @@
       ansible.builtin.shell: kubeadm token create --print-join-command
       register: kube_join_command
       when: inventory_hostname in groups['kube_master']
+      run_once: true
 
     - name: Debug join output
       ansible.builtin.debug:
         var: kube_join_command
+      run_once: true
 
     - name: Execute join with generated command from kube_master
-      ansible.builtin.shell: "{{ hostvars[groups['kube_master']].kube_join_command }}"
+      ansible.builtin.shell: "{{ hostvars['kube_master.master']['kube_join_command'].stdout }}"
       when: inventory_hostname in groups['kube_node']
+
+    #- name: Set kubeadm_join_command fact for worker nodes
+    #  ansible.builtin.set_fact: 
+    #    kube_join_command: "{{ hostvars['kube_master.master']['kube_join_command'].stdout }}"
+
 
     #- name:
     #  set_fact:
