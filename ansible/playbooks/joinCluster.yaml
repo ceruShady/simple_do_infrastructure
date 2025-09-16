@@ -18,7 +18,7 @@
 
     - name: Set kubeadm_join_command fact for worker nodes
       ansible.builtin.set_fact: 
-        kube_join_command: "{{ hostvars['kube_master.master']['kube_join_output'].stdout }}"
+        kube_join_command: "{{ hostvars[groups['kube_master']]['kube_join_output'].stdout }}"
       when: inventory_hostname in groups['kube_node']
 
     - name: Debug join command
