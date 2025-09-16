@@ -143,12 +143,10 @@
       when: inventory_hostname in groups['kube_master']
 
     - name: Copy kubeconfig file
-      ansible.builtin.copy:
-        src: /etc/kubernetes/admin.conf
-        dest: ~/.kube/config
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        mode: '0600'
+      ansible.builtin.shell: |
+        mkdir -p $HOME/.kube
+        cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+        chown $(id -u):$(id -g) $HOME/.kube/config
 
     - name: Setup Tiger operator for Calico CNI
       ansible.builtin.shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/tigera-operator.yaml
