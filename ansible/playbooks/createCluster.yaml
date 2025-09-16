@@ -78,8 +78,8 @@
 
     - name: Set permissions for Kubernetes APT keyring
       ansible.builtin.file:
-      path: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-      mode: '0644'
+        path: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+        mode: '0644'
 
     - name: Create kubernetes source list
       ansible.builtin.shell:
@@ -89,8 +89,8 @@
 
     - name: Set permissions for Kubernetes source list
       ansible.builtin.file:
-      path: /etc/apt/sources.list.d/kubernetes.list
-      mode: '0644'
+        path: /etc/apt/sources.list.d/kubernetes.list
+        mode: '0644'
 
     - name: apt install kubelet kubeadm kubectl for kube_master
       ansible.builtin.apt:
