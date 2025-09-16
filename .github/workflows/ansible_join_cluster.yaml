@@ -1,4 +1,4 @@
-name: Create Kubernetes cluster with Kubeadm
+name: Join cluster
 
 on: 
   workflow_dispatch:
