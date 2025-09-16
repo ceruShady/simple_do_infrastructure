@@ -36,10 +36,14 @@
     - name: Generate default containerd configuration and set SystemdCgroup to true
       ansible.builtin.shell: |
         containerd config default > /etc/containerd/config.toml
-        sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
-        sed -i 's/sandbox_image = "registry.k8s.io/pause:3.8"/sandbox_image = "registry.k8s.io/pause:3.10.1"/g' /etc/containerd/config.toml
       args:
         creates: /etc/containerd/config.toml
+
+    - name: Set SystemdCgroup to true
+      ansible.builtin.shell: sed -i 's|SystemdCgroup = false|SystemdCgroup = true|' /etc/containerd/config.toml
+
+    - name: Change sandbox image version to 3.10.1
+      ansible.builtin.shell: sed -i 's|sandbox_image = "registry.k8s.io/pause:3.8"|sandbox_image = "registry.k8s.io/pause:3.10.1"|' /etc/containerd/config.toml
 
     - name: Restart and set auto start containerd service
       ansible.builtin.systemd:
