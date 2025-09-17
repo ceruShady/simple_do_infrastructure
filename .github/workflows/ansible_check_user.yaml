@@ -38,7 +38,7 @@ jobs:
 
       - name: Run Ansible once
         env:
-          ANSIBLE_USER: root
+          ANSIBLE_USER: testUser1
           ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
           ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
         run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/printUser.yaml --extra-vars "new_user=${{ secrets.KUBE_USER }}" --extra-vars "ssh_public_key='${{ secrets.SSH_PUBLIC_KEY }}'"
