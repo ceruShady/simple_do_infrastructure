@@ -35,7 +35,6 @@ jobs:
 
       - name: Run Ansible playbook
         env:
-          ANSIBLE_USER: ${{ secrets.KUBE_USER}}
           ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
           ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
-        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/createCluster.yaml 
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/createCluster.yaml --extra-vars "rmt_usr=${{ secrets.KUBE_USER }}"
