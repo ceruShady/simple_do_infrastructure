@@ -1,0 +1,10 @@
+---
+- hosts: kube_master, kube_node
+  serial: 1
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Print the ansible_user
+      debug:
+        msg: "The Ansible connection user is: {{ ansible_user }}"

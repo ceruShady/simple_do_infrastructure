@@ -1,0 +1,51 @@
+name: Ansible - Check ansible user
+
+on: 
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  cloud-init:
+    name: Create user and k8s cluster with Ansible
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Get inventory file
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.TF_BUCKET_ACCESS }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_BUCKET_SECRET }}
+          AWS_REGION: ${{ secrets.TF_BUCKET_REGION }}
+        run: |
+          mkdir ./ansible/inventory
+          aws s3api get-object --bucket ${{ secrets.TF_BUCKET_NAME }} --endpoint ${{ secrets.TF_BUCKET_REGION_ENDPOINT_URL}}  --key inventory.yaml ./ansible/inventory/inventory.yaml
+          
+        # aws s3 cp s3://${{ secrets.TF_BUCKET_NAME }}/inventory.yaml ./inventory.yaml
+
+      - name: Install Ansible
+        shell: bash
+        run: |
+          sudo apt update
+          sudo apt install -y software-properties-common
+          sudo add-apt-repository -y --update ppa:ansible/ansible
+          sudo apt install -y ansible
+
+      - name: Run Ansible once
+        env:
+          ANSIBLE_USER: ${{ secrets.ANSIBLE_USER }}
+          ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
+          ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/printUser.yaml --extra-vars "new_user=${{ secrets.KUBE_USER }}" --extra-vars "ssh_public_key='${{ secrets.SSH_PUBLIC_KEY }}'"
+
+      - name: Run Ansible again
+        env:
+          ANSIBLE_USER: ${{ secrets.KUBE_USER }}
+          ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
+          ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/printUser.yaml 
