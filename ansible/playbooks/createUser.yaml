@@ -1,6 +1,7 @@
 ---
 - hosts: kube_master, kube_node
   serial: 1
+  become_user: "{{ rmt_usr }}"
   become: yes
   vars:
     ansible_python_interpreter: /usr/bin/python3
