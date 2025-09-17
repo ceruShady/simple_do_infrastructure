@@ -1,13 +1,14 @@
 ---
-- hosts: kube_master, kube_node
+- hosts: kube_master
   serial: 1
+  remote_user: "{{ remote_user }}"
   become: yes
   vars:
     ansible_python_interpreter: /usr/bin/python3
   tasks:
     - name: Print the ansible_user
       debug:
-        msg: "The Ansible connection user is: {{ ansible_user }}"
+        msg: "The Ansible connection user is: {{ remote_user }}"
     - name: Debug ansible env
       ansible.builtin.debug:
         var: ansible_env
