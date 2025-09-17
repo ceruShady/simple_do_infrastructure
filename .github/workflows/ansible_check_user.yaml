@@ -41,11 +41,11 @@ jobs:
           ANSIBLE_USER: root
           ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
           ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
-        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/printUser.yaml --extra-vars
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/printUser.yaml
 
       - name: Run Ansible again
         env:
           ANSIBLE_USER: kubeadmin
           ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
           ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
-        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/printUser.yaml --extra-vars
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/printUser.yaml
