@@ -12,6 +12,6 @@
       debug:
         msg: "The Ansible connection user is: {{ ansible_user }}"
     - name: Debug ansible env
-    become: yes
+      become: yes
       ansible.builtin.debug:
         var: ansible_env
