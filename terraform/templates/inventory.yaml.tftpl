@@ -4,7 +4,6 @@ kube_master:
             ansible_host: ${master_ip}
             ip: ${master_ip}
             access_ip: ${master_ip}
-            ansible_user: ${ansible_user}
 
 kube_node:
     hosts:
@@ -13,7 +12,6 @@ kube_node:
             ansible_host: ${instance.ipv4_address}
             ip: ${instance.ipv4_address}
             access_ip: ${instance.ipv4_address}
-            ansible_user: ${ansible_user}
     %{ endfor ~}   
 
 etcd:

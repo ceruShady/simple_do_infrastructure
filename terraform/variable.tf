@@ -85,7 +85,3 @@ variable "ansible_inventory_template_location" {
   default     = "./templates/inventory.yaml.tftpl"
 }
 
-variable "ansible_user_name" {
-  description = "Username for ansible"
-  default     = "root"
-}
