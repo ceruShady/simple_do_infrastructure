@@ -1,7 +1,7 @@
 ---
 - hosts: kube_master
   serial: 1
-  remote_user: "{{ rmt_usr }}"
+  #remote_user: "{{ rmt_usr }}"
   #become_user: "{{ rmt_usr }}"
   #become: yes
   vars:

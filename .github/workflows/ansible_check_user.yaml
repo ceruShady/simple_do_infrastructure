@@ -38,14 +38,14 @@ jobs:
 
       - name: Run Ansible once
         env:
-          ANSIBLE_USER: testUser1
+          ANSIBLE_USER: root
           ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
           ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
-        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/printUser.yaml --extra-vars "rmt_usr=root"
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/printUser.yaml --extra-vars
 
       - name: Run Ansible again
         env:
-          ANSIBLE_USER: testUser2
+          ANSIBLE_USER: kubeadmin
           ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
           ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
-        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/printUser.yaml --extra-vars "rmt_usr=kubeadmin"
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/printUser.yaml --extra-vars
