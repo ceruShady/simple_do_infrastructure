@@ -22,7 +22,7 @@
         pkg:
           - apt-transport-https
           - curl
-            - containerd
+          - containerd
         state: present
         update_cache: yes
 
