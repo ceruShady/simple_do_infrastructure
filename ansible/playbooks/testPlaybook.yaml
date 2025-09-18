@@ -1,17 +1,26 @@
 ---
 - hosts: kube_master
   serial: 1
-  become_user: "{{ rmt_usr }}"
+  remote_user: "{{ rmt_usr }}"
   #become_user: "{{ rmt_usr }}"
   # become: yes
   vars:
     ansible_python_interpreter: /usr/bin/python3
   tasks:
-    - name: Print the ansible_user
+    # - name: Print the ansible_user
       # become: yes
-      debug:
-        msg: "The Ansible connection user is: {{ ansible_user }}"
-    - name: Debug ansible env
+      # debug:
+        # msg: "The Ansible connection user is: {{ ansible_user }}"
+    # - name: Debug ansible env
       # become: yes
-      ansible.builtin.debug:
-        var: ansible_env
+      # ansible.builtin.debug:
+        # var: ansible_env
+    - name: Copy kubeconfig file and change owner
+      become: yes
+      ansible.builtin.copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ ansible_env.HOME }}/.kube/config"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600' 
+      when: inventory_hostname in groups['kube_master']

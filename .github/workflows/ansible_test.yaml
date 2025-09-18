@@ -41,7 +41,7 @@ jobs:
           #ANSIBLE_USER: root
           ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
           ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
-        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/testPlaybook.yaml --extra-vars "rmt_usr=root"
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/testPlaybook.yaml --extra-vars "rmt_usr={{ vars.KUBE_USER }}"
 
       # - name: Run Ansible again
         # env:
