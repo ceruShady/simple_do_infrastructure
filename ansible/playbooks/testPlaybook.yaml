@@ -18,6 +18,7 @@
     - name: Copy kubeconfig file and change owner
       become: yes
       ansible.builtin.copy:
+        remote_src: yes
         src: /etc/kubernetes/admin.conf
         dest: "{{ ansible_env.HOME }}/.kube/config"
         owner: "{{ ansible_user }}"
