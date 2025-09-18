@@ -188,7 +188,6 @@
         mode: '0600' 
       when: inventory_hostname in groups['kube_master']
 
-
     #- name: Copy kubeconfig file
     #  become: yes
     #  ansible.builtin.shell: |
@@ -209,6 +208,7 @@
     - name: Pause for 30 seconds for Tigera operator setup
       ansible.builtin.pause:
         seconds: 30
+      when: inventory_hostname in groups['kube_master']
 
     - name: Setup Calico CNI
       ansible.builtin.shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/custom-resources.yaml
@@ -242,5 +242,6 @@
     #   when: inventory_hostname in groups['kube_node']
 
     - name: Run join command
+      become: yes
       ansible.builtin.shell: "{{ kube_join_command }}"
       when: inventory_hostname in groups['kube_node']
