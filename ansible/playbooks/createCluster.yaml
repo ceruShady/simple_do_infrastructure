@@ -15,21 +15,22 @@
       environment:
         UCF_FORCE_CONFFOLD: "1"
 
-    - name: apt install apt-transport-https curl
+    - name: Install apt-transport-https, curl and containerd
       become: yes
       ansible.builtin.apt:
         pkg:
           - apt-transport-https
           - curl
+          - containerd
         state: present
-        update_cache: true
+        update_cache: yes
 
-    - name: Install containerd
-      become: yes
-      ansible.builtin.apt:
-        pkg:
-          - containerd 
-        state: present 
+    # - name: Install containerd
+    #   become: yes
+    #   ansible.builtin.apt:
+    #     pkg:
+    #       - containerd 
+    #     state: present 
 
     - name: Create containerd configuration directory
       become: yes
@@ -45,13 +46,29 @@
       args:
         creates: /etc/containerd/config.toml
 
+    # - name: Set SystemdCgroup to true
+    #   become: yes
+    #   ansible.builtin.shell: sed -i 's|SystemdCgroup = false|SystemdCgroup = true|' /etc/containerd/config.toml
+
     - name: Set SystemdCgroup to true
       become: yes
-      ansible.builtin.shell: sed -i 's|SystemdCgroup = false|SystemdCgroup = true|' /etc/containerd/config.toml
+      ansible.builtin.replace:
+        path: /etc/containerd/config.toml
+        regexp: 'SystemdCgroup = false'
+        replace: 'SystemdCgroup = true'
+        backup: yes 
 
-    - name: Change sandbox image version to 3.10.1
+    # - name: Change sandbox image version to 3.10.1
+    #   become: yes
+    #   ansible.builtin.shell: sed -i 's|sandbox_image = "registry.k8s.io/pause:3.8"|sandbox_image = "registry.k8s.io/pause:3.10.1"|' /etc/containerd/config.toml
+
+    - name: Set SystemdCgroup to true
       become: yes
-      ansible.builtin.shell: sed -i 's|sandbox_image = "registry.k8s.io/pause:3.8"|sandbox_image = "registry.k8s.io/pause:3.10.1"|' /etc/containerd/config.toml
+      ansible.builtin.replace:
+        path: /etc/containerd/config.toml
+        regexp: 'sandbox_image = "registry.k8s.io/pause:3.8'
+        replace: 'sandbox_image = "registry.k8s.io/pause:3.10.1'
+        backup: yes 
 
     - name: Restart and set auto start containerd service
       become: yes
@@ -110,7 +127,7 @@
         path: /etc/apt/sources.list.d/kubernetes.list
         mode: '0644'
 
-    - name: apt install kubelet kubeadm kubectl for kube_master
+    - name: Install kubelet kubeadm kubectl
       become: yes
       ansible.builtin.apt:
         pkg:
@@ -119,15 +136,6 @@
           - kubectl 
         state: present
         update_cache: true
-
-    #- name: apt install kubelet kubectl for kube_node
-    #  ansible.builtin.apt:
-    #    pkg:
-    #      - kubelet 
-    #      - kubectl 
-    #    state: present
-    #    update_cache: true
-    #  when: inventory_hostname in groups['kube_node']
 
     - name: Enable IPv4 packet forwarding
       become: yes
@@ -169,22 +177,34 @@
         mode: '0755'
       when: inventory_hostname in groups['kube_master']
 
-    - name: Copy kubeconfig file
+    - name: Copy kubeconfig file and change owner
       become: yes
-      ansible.builtin.shell: |
-        cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-        chown $(id -u):$(id -g) $HOME/.kube/config
+      ansible.builtin.copy:
+        remote_src: yes
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ ansible_env.HOME }}/.kube/config"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600' 
       when: inventory_hostname in groups['kube_master']
+
+
+    #- name: Copy kubeconfig file
+    #  become: yes
+    #  ansible.builtin.shell: |
+    #    "cp -i /etc/kubernetes/admin.conf {{ ansible_env.HOME }}/.kube/config"
+    #    chown $(id -u):$(id -g) $HOME/.kube/config
+    #  when: inventory_hostname in groups['kube_master']
 
     - name: Setup Tigera operator for Calico CNI
       ansible.builtin.shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/tigera-operator.yaml
       register: tigera_output
       when: inventory_hostname in groups['kube_master']
 
-    - name: Debug tigera output
-      ansible.builtin.debug:
-        var: tigera_output
-      when: inventory_hostname in groups['kube_master']
+    # - name: Debug tigera output
+    #   ansible.builtin.debug:
+    #     var: tigera_output
+    #   when: inventory_hostname in groups['kube_master']
 
     - name: Pause for 30 seconds for Tigera operator setup
       ansible.builtin.pause:
@@ -195,9 +215,9 @@
       register: calico_output
       when: inventory_hostname in groups['kube_master']
 
-    - name: Debug calico output
-      ansible.builtin.debug:
-        var: calico_output
+    # - name: Debug calico output
+    #   ansible.builtin.debug:
+    #     var: calico_output
 
     - name: Generate and save kubeadm join command
       become: yes
@@ -206,20 +226,20 @@
       when: inventory_hostname in groups['kube_master']
       run_once: true
 
-    - name: Debug join output
-      ansible.builtin.debug:
-        var: kube_join_output
-      when: inventory_hostname in groups['kube_master']
+    # - name: Debug join output
+    #   ansible.builtin.debug:
+    #     var: kube_join_output
+    #   when: inventory_hostname in groups['kube_master']
 
     - name: Set kubeadm_join_command fact for worker nodes
       ansible.builtin.set_fact: 
         kube_join_command: "{{ hostvars['master']['kube_join_output'].stdout }}"
       when: inventory_hostname in groups['kube_node']
 
-    - name: Debug join command
-      ansible.builtin.debug:
-        var: kube_join_command
-      when: inventory_hostname in groups['kube_node']
+    # - name: Debug join command
+    #   ansible.builtin.debug:
+    #     var: kube_join_command
+    #   when: inventory_hostname in groups['kube_node']
 
     - name: Run join command
       ansible.builtin.shell: "{{ kube_join_command }}"
