@@ -15,13 +15,51 @@
       # become: yes
       # ansible.builtin.debug:
         # var: ansible_env
-    - name: Copy kubeconfig file and change owner
-      become: yes
-      ansible.builtin.copy:
-        remote_src: yes
-        src: /etc/kubernetes/admin.conf
-        dest: "{{ ansible_env.HOME }}/.kube/config"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        mode: '0600' 
+    - name: Setup Tigera operator for Calico CNI
+      ansible.builtin.shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/tigera-operator.yaml
+      register: tigera_output
       when: inventory_hostname in groups['kube_master']
+
+    - name: Debug tigera output
+      ansible.builtin.debug:
+        var: tigera_output
+      when: inventory_hostname in groups['kube_master']
+
+    - name: Pause for 30 seconds for Tigera operator setup
+      ansible.builtin.pause:
+        seconds: 30
+
+    - name: Setup Calico CNI
+      ansible.builtin.shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/custom-resources.yaml
+      register: calico_output
+      when: inventory_hostname in groups['kube_master']
+
+    - name: Debug calico output
+      ansible.builtin.debug:
+        var: calico_output
+
+    # - name: Generate and save kubeadm join command
+    #   become: yes
+    #   ansible.builtin.shell: kubeadm token create --print-join-command
+    #   register: kube_join_output
+    #   when: inventory_hostname in groups['kube_master']
+    #   run_once: true
+
+    # - name: Debug join output
+    #   ansible.builtin.debug:
+    #     var: kube_join_output
+    #   when: inventory_hostname in groups['kube_master']
+
+    # - name: Set kubeadm_join_command fact for worker nodes
+    #   ansible.builtin.set_fact: 
+    #     kube_join_command: "{{ hostvars['master']['kube_join_output'].stdout }}"
+    #   when: inventory_hostname in groups['kube_node']
+
+    # - name: Debug join command
+    #   ansible.builtin.debug:
+    #     var: kube_join_command
+    #   when: inventory_hostname in groups['kube_node']
+
+    # - name: Run join command
+    #   ansible.builtin.shell: "{{ kube_join_command }}"
+    #   when: inventory_hostname in groups['kube_node']
