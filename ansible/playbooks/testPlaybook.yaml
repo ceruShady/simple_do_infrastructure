@@ -1,5 +1,5 @@
 ---
-- hosts: kube_master
+- hosts: kube_node
   serial: 1
   remote_user: "{{ rmt_usr }}"
   #become_user: "{{ rmt_usr }}"
@@ -7,6 +7,19 @@
   vars:
     ansible_python_interpreter: /usr/bin/python3
   tasks:
+    - name: apt package update and upgrade
+      become: yes
+      ansible.builtin.apt:
+        pkg:
+          - apt-transport-https
+          - curl
+          - containerd 
+        state: present
+        update_cache: yes
+        upgrade: yes
+        cache_valid_time: 86400 # Only run if cache is older than 24hrs
+      environment:
+        UCF_FORCE_CONFFOLD: "1"
     # - name: Print the ansible_user
       # become: yes
       # debug:
@@ -15,28 +28,28 @@
       # become: yes
       # ansible.builtin.debug:
         # var: ansible_env
-    - name: Setup Tigera operator for Calico CNI
-      ansible.builtin.shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/tigera-operator.yaml
-      register: tigera_output
-      when: inventory_hostname in groups['kube_master']
+    # - name: Setup Tigera operator for Calico CNI
+    #   ansible.builtin.shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/tigera-operator.yaml
+    #   register: tigera_output
+    #   when: inventory_hostname in groups['kube_master']
 
-    - name: Debug tigera output
-      ansible.builtin.debug:
-        var: tigera_output
-      when: inventory_hostname in groups['kube_master']
+    # - name: Debug tigera output
+    #   ansible.builtin.debug:
+    #     var: tigera_output
+    #   when: inventory_hostname in groups['kube_master']
 
-    - name: Pause for 30 seconds for Tigera operator setup
-      ansible.builtin.pause:
-        seconds: 30
+    # - name: Pause for 30 seconds for Tigera operator setup
+    #   ansible.builtin.pause:
+    #     seconds: 30
 
-    - name: Setup Calico CNI
-      ansible.builtin.shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/custom-resources.yaml
-      register: calico_output
-      when: inventory_hostname in groups['kube_master']
+    # - name: Setup Calico CNI
+    #   ansible.builtin.shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/custom-resources.yaml
+    #   register: calico_output
+    #   when: inventory_hostname in groups['kube_master']
 
-    - name: Debug calico output
-      ansible.builtin.debug:
-        var: calico_output
+    # - name: Debug calico output
+    #   ansible.builtin.debug:
+    #     var: calico_output
 
     # - name: Generate and save kubeadm join command
     #   become: yes
