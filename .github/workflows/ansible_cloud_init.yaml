@@ -40,10 +40,10 @@ jobs:
         env:
           ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
           ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
-        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/createUser.yaml --extra-vars "rmt_usr=${{ secrets.ANSIBLE_USER }}" --extra-vars "new_user=${{ secrets.KUBE_USER }}" --extra-vars "ssh_public_key='${{ secrets.SSH_PUBLIC_KEY }}'"
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/createUser.yaml --extra-vars "rmt_usr=${{ vars.ANSIBLE_USER }}" --extra-vars "new_user=${{ vars.KUBE_USER }}" --extra-vars "ssh_public_key='${{ secrets.SSH_PUBLIC_KEY }}'"
 
       - name: Run Ansible create cluster playbook
         env:
           ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
           ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
-        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/createCluster.yaml --extra-vars "rmt_usr=${{ secrets.KUBE_USER }}"
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/createCluster.yaml --extra-vars "rmt_usr=${{ vars.KUBE_USER }}"
