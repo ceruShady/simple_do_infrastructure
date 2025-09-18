@@ -10,16 +10,22 @@
     - name: apt package update and upgrade
       become: yes
       ansible.builtin.apt:
-        pkg:
-          - apt-transport-https
-          - curl
-          - containerd 
-        state: present
         update_cache: yes
         upgrade: yes
         cache_valid_time: 86400 # Only run if cache is older than 24hrs
       environment:
         UCF_FORCE_CONFFOLD: "1"
+
+    - name: apt install apt-transport-https curl
+      become: yes
+      ansible.builtin.apt:
+        pkg:
+          - apt-transport-https
+          - curl
+            - containerd
+        state: present
+        update_cache: yes
+
     # - name: Print the ansible_user
       # become: yes
       # debug:
