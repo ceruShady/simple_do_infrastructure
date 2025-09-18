@@ -1,9 +1,9 @@
 ---
 - hosts: kube_master
   serial: 1
-  remote_user: "{{ rmt_usr }}"
+  become_user: "{{ rmt_usr }}"
   #become_user: "{{ rmt_usr }}"
-  become: yes
+  # become: yes
   vars:
     ansible_python_interpreter: /usr/bin/python3
   tasks:
