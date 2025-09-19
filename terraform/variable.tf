@@ -25,6 +25,26 @@ variable "worker_num" {
   default     = 2
 }
 
+variable "droplet_name_master" {
+  description = "Name of master droplet"
+  default     = "node-master"
+}
+
+variable "droplet_name_worker" {
+  description = "Name of worker droplet"
+  default     = "node-worker"
+}
+
+variable "tag_name_master" {
+  description = "Tag name for master"
+  default     = "master"
+}
+
+variable "tag_name_worker" {
+  description = "Tag name for worker"
+  default     = "worker"
+}
+
 variable "image_master" {
   description = "Image for master instance"
   default     = "ubuntu-24-04-x64"

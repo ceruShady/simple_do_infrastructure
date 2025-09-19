@@ -1,8 +1,8 @@
 resource "local_file" "inventory" {
   filename = var.ansible_inventory_location
   content = templatefile(var.ansible_inventory_template_location, {
-    master_ip    = digitalocean_droplet.master.ipv4_address
-    workers      = digitalocean_droplet.workers.*
+    master_ip = digitalocean_droplet.droplet_master.ipv4_address
+    workers   = digitalocean_droplet.droplet_workers.*
   })
   file_permission = "0444"
 }
