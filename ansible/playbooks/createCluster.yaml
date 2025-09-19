@@ -62,7 +62,7 @@
     #   become: yes
     #   ansible.builtin.shell: sed -i 's|sandbox_image = "registry.k8s.io/pause:3.8"|sandbox_image = "registry.k8s.io/pause:3.10.1"|' /etc/containerd/config.toml
 
-    - name: Set SystemdCgroup to true
+    - name: Change sandbox_image version to 3.10.1
       become: yes
       ansible.builtin.replace:
         path: /etc/containerd/config.toml
