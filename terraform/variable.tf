@@ -37,12 +37,12 @@ variable "droplet_name_worker" {
 
 variable "tag_name_master" {
   description = "Tag name for master"
-  default     = "master"
+  default     = "kube-master"
 }
 
 variable "tag_name_worker" {
   description = "Tag name for worker"
-  default     = "worker"
+  default     = "kube-worker"
 }
 
 variable "image_master" {
