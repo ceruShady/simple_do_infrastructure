@@ -1,6 +1,6 @@
 resource "digitalocean_vpc" "do_vpc" {
-  name   = "kube-private-network"
-  region = var.do_region
+  name     = "kube-private-network"
+  region   = var.do_region
   ip_range = "10.108.0.0/20"
 }
 
@@ -12,7 +12,7 @@ resource "digitalocean_firewall" "firewall_master" {
 
   # ICMP
   inbound_rule {
-    protocol              = "icmp"
+    protocol    = "icmp"
     source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
   }
 
@@ -29,12 +29,13 @@ resource "digitalocean_firewall" "firewall_master" {
     port_range       = "80"
     source_addresses = ["0.0.0.0/0"]
   }
-  
-   # BGP for Calico CNI
+
+  # BGP for Calico CNI
   inbound_rule {
-    protocol    = "tcp"
-    port_range  = "179"
-    source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+    protocol   = "tcp"
+    port_range = "179"
+    #source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+    source_addresses = ["0.0.0.0/0"]
   }
 
   # HTTP
@@ -46,36 +47,36 @@ resource "digitalocean_firewall" "firewall_master" {
 
   # etcd server client API
   inbound_rule {
-    protocol   = "tcp"
-    port_range = "2379-2380"
+    protocol    = "tcp"
+    port_range  = "2379-2380"
     source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
   }
 
   # Kubernetes API server
   inbound_rule {
-    protocol   = "tcp"
-    port_range = "6443"
+    protocol    = "tcp"
+    port_range  = "6443"
     source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
   }
 
   # Kubelet API
   inbound_rule {
-    protocol   = "tcp"
-    port_range = "10250"
+    protocol    = "tcp"
+    port_range  = "10250"
     source_tags = [digitalocean_tag.tag_master.id]
   }
 
   # kube-controller-manager
   inbound_rule {
-    protocol   = "tcp"
-    port_range = "10257"
+    protocol    = "tcp"
+    port_range  = "10257"
     source_tags = [digitalocean_tag.tag_master.id]
   }
 
   # kube-scheduler
   inbound_rule {
-    protocol   = "tcp"
-    port_range = "10259"
+    protocol    = "tcp"
+    port_range  = "10259"
     source_tags = [digitalocean_tag.tag_master.id]
   }
 
@@ -91,6 +92,20 @@ resource "digitalocean_firewall" "firewall_master" {
     protocol         = "udp"
     port_range       = "53"
     source_addresses = ["0.0.0.0/0"]
+  }
+
+  # VXLAN for Calico CNI
+  inbound_rule {
+    protocol         = "udp"
+    port_range       = "4789"
+    source_addresses = ["0.0.0.0/0"]
+  }
+
+  # Typha for Calico CNI
+  inbound_rule {
+    protocol    = "tcp"
+    port_range  = "5473"
+    source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
   }
 
   ### Outbound
@@ -117,9 +132,10 @@ resource "digitalocean_firewall" "firewall_master" {
 
   # Calico Networking BGP
   outbound_rule {
-    protocol         = "tcp"
-    port_range       = "179"
-    destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+    protocol   = "tcp"
+    port_range = "179"
+    # destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+    destination_addresses = ["0.0.0.0/0"]
   }
 
   # HTTPS
@@ -135,6 +151,20 @@ resource "digitalocean_firewall" "firewall_master" {
     port_range            = "53"
     destination_addresses = ["0.0.0.0/0"]
   }
+
+  # VXLAN for Calico CNI
+  outbound_rule {
+    protocol              = "udp"
+    port_range            = "4789"
+    destination_addresses = ["0.0.0.0/0"]
+  }
+
+  # Typha for Calico CNI
+  outbound_rule {
+    protocol         = "tcp"
+    port_range       = "5473"
+    destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+  }
 }
 
 resource "digitalocean_firewall" "firewall_worker" {
@@ -142,10 +172,10 @@ resource "digitalocean_firewall" "firewall_worker" {
   tags = [digitalocean_tag.tag_worker.id]
 
   ### Inbound
-  
+
   # ICMP
   inbound_rule {
-    protocol              = "icmp"
+    protocol    = "icmp"
     source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
   }
 
@@ -154,14 +184,14 @@ resource "digitalocean_firewall" "firewall_worker" {
     protocol         = "tcp"
     port_range       = "22"
     source_addresses = ["0.0.0.0/0"]
-    source_tags = [digitalocean_tag.tag_master.id]
   }
 
   # BGP for Calico CNI
   inbound_rule {
-    protocol    = "tcp"
-    port_range  = "179"
-    source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+    protocol   = "tcp"
+    port_range = "179"
+    # source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+    source_addresses = ["0.0.0.0/0"]
   }
 
   # Kubelet API
@@ -208,6 +238,20 @@ resource "digitalocean_firewall" "firewall_worker" {
     source_addresses = ["0.0.0.0/0"]
   }
 
+  # VXLAN for Calico CNI
+  inbound_rule {
+    protocol         = "udp"
+    port_range       = "4789"
+    source_addresses = ["0.0.0.0/0"]
+  }
+
+  # Typha for Calico CNI
+  inbound_rule {
+    protocol    = "tcp"
+    port_range  = "5473"
+    source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+  }
+
   ### Outbound
 
   # ICMP
@@ -232,9 +276,10 @@ resource "digitalocean_firewall" "firewall_worker" {
 
   # Calico Networking BGP
   outbound_rule {
-    protocol         = "tcp"
-    port_range       = "179"
-    destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+    protocol   = "tcp"
+    port_range = "179"
+    # destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+    destination_addresses = ["0.0.0.0/0"]
   }
 
   # HTTPS
@@ -256,6 +301,20 @@ resource "digitalocean_firewall" "firewall_worker" {
     protocol              = "udp"
     port_range            = "53"
     destination_addresses = ["0.0.0.0/0"]
+  }
+
+  # VXLAN for Calico CNI
+  outbound_rule {
+    protocol              = "udp"
+    port_range            = "4789"
+    destination_addresses = ["0.0.0.0/0"]
+  }
+
+  # Typha for Calico CNI
+  outbound_rule {
+    protocol         = "tcp"
+    port_range       = "5473"
+    destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
   }
 }
 
