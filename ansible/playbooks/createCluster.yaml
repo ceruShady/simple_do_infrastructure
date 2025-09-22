@@ -136,6 +136,17 @@
           - kubectl 
         state: present
         update_cache: true
+      when: inventory_hostname in groups['kube_master']
+
+    - name: Install kubelet kubeadm
+      become: yes
+      ansible.builtin.apt:
+        pkg:
+          - kubelet 
+          - kubeadm
+        state: present
+        update_cache: true
+      when: inventory_hostname in groups['kube_node']
 
     - name: Enable IPv4 packet forwarding
       become: yes
@@ -152,7 +163,9 @@
 
     - name: Enable ip-in-ip
       become: yes
-      ansible.builtin.shell: iptables -A INPUT -p 4 -j ACCEPT
+      ansible.builtin.shell: | 
+        iptables -A INPUT -p 4 -j ACCEPT 
+        iptables -A OUTPUT -p 4 -j ACCEPT
 
     - name: Install iptables-persistent
       become: yes
