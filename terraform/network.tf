@@ -63,7 +63,7 @@ resource "digitalocean_firewall" "firewall_master" {
   inbound_rule {
     protocol    = "tcp"
     port_range  = "10250"
-    source_tags = [digitalocean_tag.tag_master.id]
+    source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
   }
 
   # kube-controller-manager
@@ -108,6 +108,13 @@ resource "digitalocean_firewall" "firewall_master" {
     source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
   }
 
+  # ingress-nginx
+  inbound_rule {
+    protocol    = "tcp"
+    port_range  = "8443"
+    source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+  }
+
   ### Outbound
 
   # ICMP
@@ -145,6 +152,13 @@ resource "digitalocean_firewall" "firewall_master" {
     destination_addresses = ["0.0.0.0/0"]
   }
 
+  # Kubelet API
+  outbound_rule {
+    protocol         = "tcp"
+    port_range       = "10250"
+    destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+  }
+
   # DNS UDP Outbound
   outbound_rule {
     protocol              = "udp"
@@ -163,6 +177,13 @@ resource "digitalocean_firewall" "firewall_master" {
   outbound_rule {
     protocol         = "tcp"
     port_range       = "5473"
+    destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+  }
+
+  # ingress-nginx
+  outbound_rule {
+    protocol         = "tcp"
+    port_range       = "8443"
     destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
   }
 }
@@ -252,6 +273,13 @@ resource "digitalocean_firewall" "firewall_worker" {
     source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
   }
 
+  # ingress-nginx
+  inbound_rule {
+    protocol    = "tcp"
+    port_range  = "8443"
+    source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+  }
+
   ### Outbound
 
   # ICMP
@@ -296,6 +324,13 @@ resource "digitalocean_firewall" "firewall_worker" {
     destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
   }
 
+  # Kubelet API
+  outbound_rule {
+    protocol         = "tcp"
+    port_range       = "10250"
+    destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+  }
+
   # DNS UDP Outbound
   outbound_rule {
     protocol              = "udp"
@@ -314,6 +349,13 @@ resource "digitalocean_firewall" "firewall_worker" {
   outbound_rule {
     protocol         = "tcp"
     port_range       = "5473"
+    destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+  }
+
+  # ingress-nginx
+  outbound_rule {
+    protocol         = "tcp"
+    port_range       = "8443"
     destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
   }
 }
