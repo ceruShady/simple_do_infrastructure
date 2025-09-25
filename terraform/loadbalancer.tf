@@ -1,4 +1,3 @@
-/*
 resource "digitalocean_loadbalancer" "public" {
   name        = "kube-load-balancer"
   region      = var.do_region
@@ -29,4 +28,4 @@ resource "digitalocean_loadbalancer" "public" {
     port     = 22
     protocol = "tcp"
   }
-}*/
+}

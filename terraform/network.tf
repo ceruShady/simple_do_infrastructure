@@ -1,10 +1,8 @@
-/*
 resource "digitalocean_vpc" "do_vpc" {
   name     = "kube-private-network"
   region   = var.do_region
   ip_range = "10.108.0.0/20"
 }
-*/
 
 resource "digitalocean_firewall" "firewall_master" {
   name = "firewall-master"
@@ -340,10 +338,18 @@ resource "digitalocean_firewall" "firewall_worker" {
     destination_addresses = ["0.0.0.0/0"]
   }
 
-  # HTTPS
+  # Calico Networking BGP
+  outbound_rule {
+    protocol   = "tcp"
+    port_range = "179"
+    # destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+    destination_addresses = ["0.0.0.0/0"]
+  }
+
+  # Calico Goldmane
   outbound_rule {
     protocol              = "tcp"
-    port_range            = "443"
+    port_range            = "7443"
     destination_addresses = ["0.0.0.0/0"]
   }
 

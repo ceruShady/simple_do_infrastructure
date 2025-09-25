@@ -1,9 +1,8 @@
-/*
 output "vpc_id" {
   description = "ID of VPC"
   value       = digitalocean_vpc.do_vpc.id
 }
-*/
+
 
 output "master_ip_addr" {
   description = "IPv4 address of provisioned master instance"

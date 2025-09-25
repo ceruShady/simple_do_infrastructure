@@ -14,7 +14,7 @@ resource "digitalocean_droplet" "droplet_master" {
   size     = var.size_master
   ssh_keys = [digitalocean_ssh_key.admin_ssh_key.id]
   tags     = [digitalocean_tag.tag_master.id]
-  #vpc_uuid = digitalocean_vpc.do_vpc.id
+  vpc_uuid = digitalocean_vpc.do_vpc.id
 }
 
 resource "digitalocean_droplet" "droplet_workers" {
@@ -25,5 +25,5 @@ resource "digitalocean_droplet" "droplet_workers" {
   size     = var.size_worker
   ssh_keys = [digitalocean_ssh_key.admin_ssh_key.id]
   tags     = [digitalocean_tag.tag_worker.id]
-  #vpc_uuid = digitalocean_vpc.do_vpc.id
+  vpc_uuid = digitalocean_vpc.do_vpc.id
 }
