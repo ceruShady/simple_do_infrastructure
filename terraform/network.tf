@@ -1,8 +1,10 @@
+/*
 resource "digitalocean_vpc" "do_vpc" {
   name     = "kube-private-network"
   region   = var.do_region
   ip_range = "10.108.0.0/20"
 }
+*/
 
 resource "digitalocean_firewall" "firewall_master" {
   name = "firewall-master"
