@@ -38,7 +38,7 @@ resource "digitalocean_firewall" "firewall_master" {
     source_addresses = ["0.0.0.0/0"]
   }
 
-  # HTTP
+  # HTTPS
   inbound_rule {
     protocol         = "tcp"
     port_range       = "443"
@@ -78,6 +78,20 @@ resource "digitalocean_firewall" "firewall_master" {
     protocol    = "tcp"
     port_range  = "10259"
     source_tags = [digitalocean_tag.tag_master.id]
+  }
+
+  # NodePort Services tcp
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "30000-32767"
+    source_addresses = ["0.0.0.0/0"]
+  }
+
+  # NodePort Services udp
+  inbound_rule {
+    protocol         = "udp"
+    port_range       = "30000-32767"
+    source_addresses = ["0.0.0.0/0"]
   }
 
   # DNS TCP Inbound
@@ -207,11 +221,25 @@ resource "digitalocean_firewall" "firewall_worker" {
     source_addresses = ["0.0.0.0/0"]
   }
 
+  # HTTP
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "80"
+    source_addresses = ["0.0.0.0/0"]
+  }
+
   # BGP for Calico CNI
   inbound_rule {
     protocol   = "tcp"
     port_range = "179"
     # source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+    source_addresses = ["0.0.0.0/0"]
+  }
+
+   # HTTPS
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "443"
     source_addresses = ["0.0.0.0/0"]
   }
 
@@ -232,18 +260,18 @@ resource "digitalocean_firewall" "firewall_worker" {
   }
 
   # NodePort Services tcp
-  inbound_rule {
-    protocol         = "tcp"
-    port_range       = "30000-32767"
-    source_addresses = ["0.0.0.0/0"]
-  }
+  #inbound_rule {
+  #  protocol         = "tcp"
+  #  port_range       = "30000-32767"
+  #  source_addresses = ["0.0.0.0/0"]
+  #}
 
   # NodePort Services udp
-  inbound_rule {
-    protocol         = "udp"
-    port_range       = "30000-32767"
-    source_addresses = ["0.0.0.0/0"]
-  }
+  #inbound_rule {
+  #  protocol         = "udp"
+  #  port_range       = "30000-32767"
+  #  source_addresses = ["0.0.0.0/0"]
+  #}
 
   # DNS TCP Inbound
   inbound_rule {
