@@ -39,7 +39,7 @@
         state: directory
         mode: '0755'
 
-    - name: Generate default containerd configuration and set SystemdCgroup to true
+    - name: Generate default containerd configuration
       become: yes
       ansible.builtin.shell: |
         containerd config default > /etc/containerd/config.toml
