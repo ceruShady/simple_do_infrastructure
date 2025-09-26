@@ -330,6 +330,13 @@ resource "digitalocean_firewall" "firewall_worker" {
     destination_addresses = ["0.0.0.0/0"]
   }
 
+  # HTTPS
+  outbound_rule {
+    protocol              = "tcp"
+    port_range            = "443"
+    destination_addresses = ["0.0.0.0/0"]
+  }
+
   # Calico Networking BGP
   outbound_rule {
     protocol   = "tcp"
