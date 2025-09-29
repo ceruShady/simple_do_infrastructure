@@ -81,17 +81,20 @@ resource "digitalocean_firewall" "firewall_master" {
   }
 
   # NodePort Services tcp
+  # Need to change to loadbalancer
   inbound_rule {
-    protocol         = "tcp"
-    port_range       = "30000-32767"
-    source_addresses = ["0.0.0.0/0"]
+    protocol   = "tcp"
+    port_range = "30000-32767"
+    #source_addresses = ["0.0.0.0/0"]
+    source_load_balancer_uids = [digitalocean_loadbalancer.public.id]
   }
 
   # NodePort Services udp
   inbound_rule {
-    protocol         = "udp"
-    port_range       = "30000-32767"
-    source_addresses = ["0.0.0.0/0"]
+    protocol   = "udp"
+    port_range = "30000-32767"
+    #source_addresses = ["0.0.0.0/0"]
+    source_load_balancer_uids = [digitalocean_loadbalancer.public.id]
   }
 
   # DNS TCP Inbound
@@ -196,9 +199,10 @@ resource "digitalocean_firewall" "firewall_master" {
 
   # ingress-nginx
   outbound_rule {
-    protocol         = "tcp"
-    port_range       = "8443"
-    destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+    protocol   = "tcp"
+    port_range = "8443"
+    # destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+    destination_addresses = ["0.0.0.0/0"]
   }
 }
 
@@ -236,7 +240,7 @@ resource "digitalocean_firewall" "firewall_worker" {
     source_addresses = ["0.0.0.0/0"]
   }
 
-   # HTTPS
+  # HTTPS
   inbound_rule {
     protocol         = "tcp"
     port_range       = "443"
@@ -260,18 +264,20 @@ resource "digitalocean_firewall" "firewall_worker" {
   }
 
   # NodePort Services tcp
-  #inbound_rule {
-  #  protocol         = "tcp"
-  #  port_range       = "30000-32767"
-  #  source_addresses = ["0.0.0.0/0"]
-  #}
+  inbound_rule {
+    protocol   = "tcp"
+    port_range = "30000-32767"
+    #source_addresses = ["0.0.0.0/0"]
+    source_load_balancer_uids = [digitalocean_loadbalancer.public.id]
+  }
 
   # NodePort Services udp
-  #inbound_rule {
-  #  protocol         = "udp"
-  #  port_range       = "30000-32767"
-  #  source_addresses = ["0.0.0.0/0"]
-  #}
+  inbound_rule {
+    protocol   = "udp"
+    port_range = "30000-32767"
+    #source_addresses = ["0.0.0.0/0"]
+    source_load_balancer_uids = [digitalocean_loadbalancer.public.id]
+  }
 
   # DNS TCP Inbound
   inbound_rule {
@@ -306,6 +312,13 @@ resource "digitalocean_firewall" "firewall_worker" {
     protocol    = "tcp"
     port_range  = "8443"
     source_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+  }
+
+  # application port
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "8080"
+    source_addresses = ["0.0.0.0/0"]
   }
 
   ### Outbound
@@ -400,6 +413,13 @@ resource "digitalocean_firewall" "firewall_worker" {
     protocol         = "tcp"
     port_range       = "8443"
     destination_tags = [digitalocean_tag.tag_master.id, digitalocean_tag.tag_worker.id]
+  }
+
+  # application port
+  outbound_rule {
+    protocol              = "tcp"
+    port_range            = "8080"
+    destination_addresses = ["0.0.0.0/0"]
   }
 }
 
