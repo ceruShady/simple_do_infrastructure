@@ -10,7 +10,7 @@ resource "digitalocean_loadbalancer" "public" {
     entry_port     = 80
     entry_protocol = "http"
 
-    target_port     = 80
+    target_port     = 31010
     target_protocol = "http"
   }
 
