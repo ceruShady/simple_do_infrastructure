@@ -36,12 +36,18 @@ jobs:
           sudo add-apt-repository -y --update ppa:ansible/ansible
           sudo apt install -y ansible
 
-      - name: Run Ansible once
+      - name: Run Ansible setup DOCR playbook
         env:
-          #ANSIBLE_USER: root
           ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
           ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
-        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/testPlaybook.yaml --extra-vars "rmt_usr=${{ vars.KUBE_USER }}"
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/setupDOCR.yaml --extra-vars "rmt_usr=${{ vars.KUBE_USER }}" "DO_API_TOKEN='${{ secrets.DO_TOKEN }}'"
+
+      # - name: Run Ansible once
+      #   env:
+      #     #ANSIBLE_USER: root
+      #     ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
+      #     ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
+      #   run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/testPlaybook.yaml --extra-vars "rmt_usr=${{ vars.KUBE_USER }}"
 
       # - name: Run Ansible again
         # env:
