@@ -1,0 +1,20 @@
+---
+- hosts: kube_master
+  serial: 1
+  remote_user: "{{ rmt_usr }}"
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    # Setup ingress-nginx with baremetal configuration manifest
+    - name: Setup ingress-nginx deployment and service using baremetal configuration manifest
+      ansible.builtin.shell: |
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.13.2/deploy/static/provider/baremetal/deploy.yaml
+    
+    - name: Pause for 60 seconds for ingress-nginx service to setup
+      ansible.builtin.pause:
+        seconds: 60
+
+    # Change nodeport of create ingress-nginx service
+    - name: Change ingress-nginx service nodeport number to 31010(for http) and 31020(for https)
+      ansible.builtin.shell: |
+        kubectl patch svc ingress-nginx-controller -n ingress-nginx -p '{"spec": {"ports":[ {"port":80, "nodePort":31010}, {"port":443, "nodePort":31020} ]}}'

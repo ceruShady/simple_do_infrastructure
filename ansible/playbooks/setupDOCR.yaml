@@ -1,0 +1,27 @@
+---
+- hosts: kube_master
+  serial: 1
+  remote_user: "{{ rmt_usr }}"
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Install DOCTL
+      become: yes
+      ansible.builtin.shell: snap install doctl
+
+    - name: Initialize authentication context with DO API token
+      ansible.builtin.shell: doctl auth init -t {{ DO_API_TOKEN }}
+
+    - name: Enable DOCTL integration with kubectl
+      become: yes
+      ansible.builtin.shell: snap connect doctl:kube-config
+
+    - name: Enable DOCTL integration with dot-docker interface
+      become: yes
+      ansible.builtin.shell: snap connect doctl:dot-docker
+
+    - name: Login to DO Container Registry using default authentication context
+      ansible.builtin.shell: doctl registry login --expiry-seconds 300
+
+    - name: Generate DO Container Registry secrets manifest and apply in cluster for pull access
+      ansible.builtin.shell: doctl registry kubernetes-manifest | kubectl apply -f -
