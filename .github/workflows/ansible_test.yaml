@@ -40,7 +40,7 @@ jobs:
         env:
           ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
           ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
-        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/setupDOCR.yaml --extra-vars "rmt_usr=${{ vars.KUBE_USER }}" "DO_API_TOKEN='${{ secrets.DO_TOKEN }}'"
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/setupDOCR.yaml --extra-vars "rmt_usr=${{ vars.KUBE_USER }}" --extra-vars "DO_API_TOKEN='${{ secrets.DO_TOKEN }}'"
 
       # - name: Run Ansible once
       #   env:
