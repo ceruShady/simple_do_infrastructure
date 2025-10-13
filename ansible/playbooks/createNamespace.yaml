@@ -22,4 +22,4 @@
         mode: "0644"
 
     - name: Create namespace with manifest
-      ansible.builtin.shell: kubectl apply -f /tmp/manifests/createNamespace.yaml
+      ansible.builtin.shell: kubectl apply -f /tmp/manifests/createAppNamespace.yaml
