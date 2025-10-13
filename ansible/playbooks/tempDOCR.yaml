@@ -5,14 +5,19 @@
   vars:
     ansible_python_interpreter: /usr/bin/python3
   tasks:
+    - name: Create directory to store manifests
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/manifests"
+        state: directory
+        owner: "{{ rmt_usr }}"
+        group: "{{ rmt_usr }}"
+        mode: "0755"
+
     - name: Login to DO Container Registry using default authentication context
       ansible.builtin.shell: doctl registry login --expiry-seconds 180
 
     - name: Download DOCR secrets manifest to a file
-      become: yes
       ansible.builtin.shell: doctl registry kubernetes-manifest > {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml
-      args:
-        creates: "{{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml"
 
     - name: Replace namespace for the secrets to "cl-app"
       ansible.builtin.replace:

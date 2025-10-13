@@ -7,10 +7,11 @@
     ansible_python_interpreter: /usr/bin/python3
   tasks:
     - name: Create directory to store manifests
-      become: true
       ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/manifests"
         state: directory
+        owner: "{{ rmt_usr }}"
+        group: "{{ rmt_usr }}"
         mode: "0755"
 
     - name: Copy manifests to kube_master
