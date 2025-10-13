@@ -8,18 +8,18 @@
     - name: Create directory to store manifests
       become: yes
       ansible.builtin.file:
-        path: "/tmp/manifests"
+        path: "{{ ansible_env.HOME }}/manifests"
         state: directory
-        mode: '0755'
+        mode: "0755"
 
     - name: Copy manifests to kube_master
       become: yes
       ansible.builtin.copy:
         src: "{{ working_dir }}/kubernetes/manifests/"
-        dest: "/tmp/manifests/"
+        dest: "{{ ansible_env.HOME }}/manifests/"
         owner: "{{ rmt_usr}}"
         group: "{{ rmt_usr}}"
         mode: "0644"
 
     - name: Create namespace with manifest
-      ansible.builtin.shell: kubectl apply -f /tmp/manifests/createAppNamespace.yaml
+      ansible.builtin.shell: kubectl apply -f {{ ansible_env.HOME }}/manifests/createAppNamespace.yaml

@@ -48,6 +48,12 @@ jobs:
           ANSIBLE_BECOME_PASS: "" # Provide empty password for passwordless sudo
         run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/createNamespace.yaml --extra-vars "rmt_usr=${{ vars.KUBE_USER }}" --extra-vars "working_dir=$(pwd)"
 
+      - name: Run Ansible tempDOCR
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "false" # Disable host key checking for CI/CD
+          ANSIBLE_BECOME_PASS: "" # Provide empty password for passwordless sudo
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/tempDOCR.yaml --extra-vars "rmt_usr=${{ vars.KUBE_USER }}"
+
       # - name: Run Ansible setup DOCR playbook
       #   env:
       #     ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD

@@ -1,0 +1,24 @@
+---
+- hosts: kube_master
+  serial: 1
+  remote_user: "{{ rmt_usr }}"
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Download DOCR secrets manifest to a file
+      become: yes
+      ansible.builtin.shell: doctl registry kubernetes-manifest > {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml
+      creates: "{{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml"
+
+    - name: Replace namespace for the secrets to "cl-app"
+      ansible.builtin.replace:
+        path: "{{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml"
+        regexp: 'namespace: kube-system'
+        replace: 'namespace: cl-app'
+        backup: yes 
+
+    - name: Apply manifest to create secrets in "cl-app" namespace
+      ansible.builtin.shell: kubectl apply -f {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml
+
+    - name: Set imagePullSecrets for the service account 
+      ansible.builtin.shell:  kubectl patch serviceaccount cl-app-admin -p '{"imagePullSecrets": [{"name": "registry-cl-container-registry"}]}'
