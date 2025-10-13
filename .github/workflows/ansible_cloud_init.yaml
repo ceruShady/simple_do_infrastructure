@@ -1,6 +1,6 @@
 name: Ansible - Cloud init
 
-on: 
+on:
   workflow_dispatch:
   workflow_call:
 
@@ -9,8 +9,8 @@ jobs:
     name: Create user and k8s cluster with Ansible
     runs-on: ubuntu-latest
     env:
-          ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
-          ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
+      ANSIBLE_HOST_KEY_CHECKING: "false" # Disable host key checking for CI/CD
+      ANSIBLE_BECOME_PASS: "" # Provide empty password for passwordless sudo
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,7 +28,7 @@ jobs:
         run: |
           mkdir ./ansible/inventory
           aws s3api get-object --bucket ${{ secrets.TF_BUCKET_NAME }} --endpoint ${{ secrets.TF_BUCKET_REGION_ENDPOINT_URL}}  --key inventory.yaml ./ansible/inventory/inventory.yaml
-          
+
         # aws s3 cp s3://${{ secrets.TF_BUCKET_NAME }}/inventory.yaml ./inventory.yaml
 
       - name: Install Ansible
@@ -47,6 +47,9 @@ jobs:
 
       - name: Run Ansible setup ingress-nginx playbook
         run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/createIngressCtrl.yaml --extra-vars "rmt_usr=${{ vars.KUBE_USER }}"
+
+      - name: Run Ansible setup namespace playbook
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/createNamespace.yaml --extra-vars "rmt_usr=${{ vars.KUBE_USER }}" --extra-vars "working_dir=$(pwd)"
 
       - name: Run Ansible setup DOCR playbook
         run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/setupDOCR.yaml --extra-vars "rmt_usr=${{ vars.KUBE_USER }}" --extra-vars "DO_API_TOKEN='${{ secrets.DO_TOKEN }}'"
