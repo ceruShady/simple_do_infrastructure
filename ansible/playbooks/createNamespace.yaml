@@ -13,7 +13,7 @@
         mode: '0755'
 
     - name: Copy manifests to kube_master
-      ansible.builtin.copy
+      ansible.builtin.copy:
       src: "{{ working_dir }}/kubernetes/manifests/*"
       dest: "/tmp/manifests/"
       owner: "{{ rmt_usr}}"
