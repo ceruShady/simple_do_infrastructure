@@ -17,8 +17,8 @@
       ansible.builtin.copy:
         src: "{{ working_dir }}/kubernetes/manifests/"
         dest: "{{ ansible_env.HOME }}/manifests/"
-        owner: "{{ rmt_usr}}"
-        group: "{{ rmt_usr}}"
+        owner: "{{ rmt_usr }}"
+        group: "{{ rmt_usr }}"
         mode: "0644"
 
     - name: Create namespace with manifest

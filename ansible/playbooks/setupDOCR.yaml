@@ -6,25 +6,25 @@
     ansible_python_interpreter: /usr/bin/python3
   tasks:
     - name: Install DOCTL
-      become: yes
+      become: true
       ansible.builtin.shell: snap install doctl
 
     - name: Initialize authentication context with DO API token
       ansible.builtin.shell: doctl auth init -t {{ DO_API_TOKEN }}
 
     - name: Enable DOCTL integration with kubectl
-      become: yes
+      become: true
       ansible.builtin.shell: snap connect doctl:kube-config
 
     - name: Enable DOCTL integration with dot-docker interface
-      become: yes
+      become: true
       ansible.builtin.shell: snap connect doctl:dot-docker
 
     - name: Login to DO Container Registry using default authentication context
       ansible.builtin.shell: doctl registry login --expiry-seconds 180
 
     - name: Download DOCR secrets manifest to a file
-      become: yes
+      become: true
       ansible.builtin.shell: doctl registry kubernetes-manifest > {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml
       args:
         creates: "{{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml"
@@ -34,7 +34,7 @@
         path: "{{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml"
         regexp: 'namespace: kube-system'
         replace: 'namespace: cl-app'
-        backup: yes 
+        backup: true 
 
     - name: Apply manifest to create secrets in "cl-app" namespace
       ansible.builtin.shell: kubectl apply -f {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml

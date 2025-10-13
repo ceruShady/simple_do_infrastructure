@@ -12,8 +12,8 @@
         password: "!"
         shell: /bin/bash
         groups: "sudo"
-        append: yes
-        create_home: yes
+        append: true
+        create_home: true
 
     - name: Configure passwordless sudo for the new user
       ansible.builtin.lineinfile:
@@ -35,7 +35,7 @@
       ansible.builtin.lineinfile:
         path: "/home/{{ new_user }}/.ssh/authorized_keys"
         line: "{{ ssh_public_key }}"
-        create: yes  # Ensure the file is created if it doesn't exist
+        create: true  # Ensure the file is created if it doesn't exist
         mode: '0600'
         owner: "{{ new_user }}"
         group: "{{ new_user }}"
