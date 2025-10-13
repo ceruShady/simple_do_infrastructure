@@ -14,7 +14,7 @@
 
     - name: Copy manifests to kube_master
       ansible.builtin.copy
-      src: "{{ proj_root }}/kubernetes/manifests/*"
+      src: "{{ working_dir }}/kubernetes/manifests/*"
       dest: "/tmp/manifests/"
       owner: "{{ rmt_usr}}"
       group: "{{ rmt_usr}}"
