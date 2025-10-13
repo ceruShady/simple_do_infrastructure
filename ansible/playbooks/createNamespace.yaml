@@ -14,11 +14,11 @@
 
     - name: Copy manifests to kube_master
       ansible.builtin.copy:
-      src: "{{ working_dir }}/kubernetes/manifests/*"
-      dest: "/tmp/manifests/"
-      owner: "{{ rmt_usr}}"
-      group: "{{ rmt_usr}}"
-      mode: "0644"
+        src: "{{ working_dir }}/kubernetes/manifests/*"
+        dest: "/tmp/manifests/"
+        owner: "{{ rmt_usr}}"
+        group: "{{ rmt_usr}}"
+        mode: "0644"
 
     - name: Create namespace with manifest
       ansible.builtin.shell: kubectl apply -f /tmp/manifests/createNamespace.yaml
