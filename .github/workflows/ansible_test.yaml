@@ -42,11 +42,11 @@ jobs:
           sudo add-apt-repository -y --update ppa:ansible/ansible
           sudo apt install -y ansible
 
-      - name: Run Ansible createNamespace playbook
-        env:
-          ANSIBLE_HOST_KEY_CHECKING: "false" # Disable host key checking for CI/CD
-          ANSIBLE_BECOME_PASS: "" # Provide empty password for passwordless sudo
-        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/createNamespace.yaml --extra-vars "rmt_usr=${{ vars.KUBE_USER }}" --extra-vars "working_dir=$(pwd)"
+      # - name: Run Ansible createNamespace playbook
+      #   env:
+      #     ANSIBLE_HOST_KEY_CHECKING: "false" # Disable host key checking for CI/CD
+      #     ANSIBLE_BECOME_PASS: "" # Provide empty password for passwordless sudo
+      #   run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/createNamespace.yaml --extra-vars "rmt_usr=${{ vars.KUBE_USER }}" --extra-vars "working_dir=$(pwd)"
 
       - name: Run Ansible tempDOCR
         env:

@@ -5,6 +5,9 @@
   vars:
     ansible_python_interpreter: /usr/bin/python3
   tasks:
+    - name: Login to DO Container Registry using default authentication context
+      ansible.builtin.shell: doctl registry login --expiry-seconds 180
+
     - name: Download DOCR secrets manifest to a file
       become: yes
       ansible.builtin.shell: doctl registry kubernetes-manifest > {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml
@@ -21,4 +24,4 @@
       ansible.builtin.shell: kubectl apply -f {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml
 
     - name: Set imagePullSecrets for the service account 
-      ansible.builtin.shell:  kubectl patch serviceaccount cl-app-admin -p '{"imagePullSecrets": [{"name": "registry-cl-container-registry"}]}'
+      ansible.builtin.shell: kubectl patch serviceaccount cl-app-admin -p '{"imagePullSecrets": [{"name": "registry-cl-container-registry"}]}'
