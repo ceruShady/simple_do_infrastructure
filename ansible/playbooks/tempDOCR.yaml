@@ -7,7 +7,7 @@
   tasks:
     - name: Create directory to store manifests
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/manifests"
+        path: "{{ ansible_env.HOME }}/manifests/secrets"
         state: directory
         owner: "{{ rmt_usr }}"
         group: "{{ rmt_usr }}"
@@ -17,18 +17,23 @@
       ansible.builtin.shell: doctl registry login --expiry-seconds 180
 
     - name: Download DOCR secrets manifest to a file
-      ansible.builtin.shell: doctl registry kubernetes-manifest > {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml
+      ansible.builtin.shell: doctl registry kubernetes-manifest > {{ ansible_env.HOME }}/manifests/secrets/createRegistrySecrets.yaml
 
     - name: Replace namespace for the secrets to "cl-app"
       ansible.builtin.replace:
-        path: "{{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml"
+        path: "{{ ansible_env.HOME }}/manifests/secrets/createRegistrySecrets.yaml"
         regexp: "namespace: kube-system"
         replace: "namespace: cl-app"
         backup: yes
 
     - name: Apply manifest to create secrets in "cl-app" namespace
-      ansible.builtin.shell: kubectl apply -f {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml
+      ansible.builtin.shell: kubectl apply -f {{ ansible_env.HOME }}/manifests/secrets/createRegistrySecrets.yaml
 
     - name: Set imagePullSecrets for the service account
       ansible.builtin.shell: |
         kubectl patch serviceaccount cl-app-admin -n cl-app -p '{"imagePullSecrets": [{"name": "registry-cl-container-registry"}]}'
+
+    - name: Remove secrets directory 
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/manifests/secrets"
+        state: absent
