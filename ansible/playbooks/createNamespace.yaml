@@ -1,0 +1,24 @@
+---
+- hosts: kube_master
+  serial: 1
+  remote_user: "{{ rmt_usr }}"
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Create directory to store manifests
+      become: yes
+      ansible.builtin.file:
+        path: "/tmp/manifests"
+        state: directory
+        mode: '0755'
+
+    - name: Copy manifests to kube_master
+      ansible.builtin.copy
+      src: "{{ proj_root }}/kubernetes/manifests/*"
+      dest: "/tmp/manifests/"
+      owner: "{{ rmt_usr}}"
+      group: "{{ rmt_usr}}"
+      mode: "0644"
+
+    - name: Create namespace with manifest
+      ansible.builtin.shell: kubectl apply -f /tmp/manifests/createNamespace.yaml
