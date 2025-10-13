@@ -21,11 +21,18 @@
       become: true
       ansible.builtin.shell: snap connect doctl:dot-docker
 
+    - name: Create directory to store manifests
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/manifests/secrets"
+        state: directory
+        owner: "{{ rmt_usr }}"
+        group: "{{ rmt_usr }}"
+        mode: "0755"
+
     - name: Login to DO Container Registry using default authentication context
       ansible.builtin.shell: doctl registry login --expiry-seconds 180
 
     - name: Download DOCR secrets manifest to a file
-      become: true
       ansible.builtin.shell: doctl registry kubernetes-manifest > {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml
       args:
         creates: "{{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml"
@@ -43,3 +50,8 @@
     - name: Set imagePullSecrets for the service account
       ansible.builtin.shell: |
         kubectl patch serviceaccount cl-app-admin -n cl-app -p '{"imagePullSecrets": [{"name": "registry-cl-container-registry"}]}'
+
+    - name: Remove secrets directory
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/manifests/secrets"
+        state: absent
