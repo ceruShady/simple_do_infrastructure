@@ -1,6 +1,6 @@
 name: Ansible - Test assorted ansible functions from testPlaybook
 
-on: 
+on:
   workflow_dispatch:
   workflow_call:
 
@@ -12,35 +12,41 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Test Current working directory
-        run: pwd
+      # - name: Test Current working directory
+      #   run: pwd
 
-      - name: Test list directories
-        run: ls -al
+      # - name: Test list directories
+      #   run: ls -al
 
-      # - name: Setup SSH agent
-      #   uses: webfactory/ssh-agent@v0.9.0
-      #   with:
-      #     ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # - name: Get inventory file
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.TF_BUCKET_ACCESS }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_BUCKET_SECRET }}
-      #     AWS_REGION: ${{ secrets.TF_BUCKET_REGION }}
-      #   run: |
-      #     mkdir ./ansible/inventory
-      #     aws s3api get-object --bucket ${{ secrets.TF_BUCKET_NAME }} --endpoint ${{ secrets.TF_BUCKET_REGION_ENDPOINT_URL}}  --key inventory.yaml ./ansible/inventory/inventory.yaml
-          
+      - name: Get inventory file
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.TF_BUCKET_ACCESS }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_BUCKET_SECRET }}
+          AWS_REGION: ${{ secrets.TF_BUCKET_REGION }}
+        run: |
+          mkdir ./ansible/inventory
+          aws s3api get-object --bucket ${{ secrets.TF_BUCKET_NAME }} --endpoint ${{ secrets.TF_BUCKET_REGION_ENDPOINT_URL}}  --key inventory.yaml ./ansible/inventory/inventory.yaml
+
         # aws s3 cp s3://${{ secrets.TF_BUCKET_NAME }}/inventory.yaml ./inventory.yaml
 
-      # - name: Install Ansible
-      #   shell: bash
-      #   run: |
-      #     sudo apt update
-      #     sudo apt install -y software-properties-common
-      #     sudo add-apt-repository -y --update ppa:ansible/ansible
-      #     sudo apt install -y ansible
+      - name: Install Ansible
+        shell: bash
+        run: |
+          sudo apt update
+          sudo apt install -y software-properties-common
+          sudo add-apt-repository -y --update ppa:ansible/ansible
+          sudo apt install -y ansible
+
+      - name: Run Ansible createNamespace playbook
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "false" # Disable host key checking for CI/CD
+          ANSIBLE_BECOME_PASS: "" # Provide empty password for passwordless sudo
+        run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/createNamespace.yaml --extra-vars "rmt_usr=${{ vars.KUBE_USER }}" --extras-vars "proj_root='$(pwd)'"
 
       # - name: Run Ansible setup DOCR playbook
       #   env:
@@ -56,8 +62,8 @@ jobs:
       #   run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/testPlaybook.yaml --extra-vars "rmt_usr=${{ vars.KUBE_USER }}"
 
       # - name: Run Ansible again
-        # env:
-          #ANSIBLE_USER: kubeadmin
-          # ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
-          # ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
-        # run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/printUser.yaml --extra-vars "rmt_usr=kubeadmin"
+      # env:
+      #ANSIBLE_USER: kubeadmin
+      # ANSIBLE_HOST_KEY_CHECKING: 'false' # Disable host key checking for CI/CD
+      # ANSIBLE_BECOME_PASS: '' # Provide empty password for passwordless sudo
+      # run: ansible-playbook -i ./ansible/inventory/inventory.yaml ./ansible/playbooks/printUser.yaml --extra-vars "rmt_usr=kubeadmin"
