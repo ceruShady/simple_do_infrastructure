@@ -24,4 +24,5 @@
       ansible.builtin.shell: kubectl apply -f {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml
 
     - name: Set imagePullSecrets for the service account 
-      ansible.builtin.shell: kubectl patch serviceaccount cl-app-admin -p '{"imagePullSecrets": [{"name": "registry-cl-container-registry"}]}'
+      ansible.builtin.shell:  |
+        kubectl patch serviceaccount cl-app-admin -n cl-app -p '{"imagePullSecrets": [{"name": "registry-cl-container-registry"}]}'
