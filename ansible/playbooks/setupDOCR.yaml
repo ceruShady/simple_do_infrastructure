@@ -1,5 +1,6 @@
 ---
-- hosts: kube_master
+- name: Setup DOCR
+  hosts: kube_master
   serial: 1
   remote_user: "{{ rmt_usr }}"
   vars:
@@ -32,13 +33,13 @@
     - name: Replace namespace for the secrets to "cl-app"
       ansible.builtin.replace:
         path: "{{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml"
-        regexp: 'namespace: kube-system'
-        replace: 'namespace: cl-app'
-        backup: true 
+        regexp: "namespace: kube-system"
+        replace: "namespace: cl-app"
+        backup: true
 
     - name: Apply manifest to create secrets in "cl-app" namespace
       ansible.builtin.shell: kubectl apply -f {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml
 
-    - name: Set imagePullSecrets for the service account 
-      ansible.builtin.shell:  |
+    - name: Set imagePullSecrets for the service account
+      ansible.builtin.shell: |
         kubectl patch serviceaccount cl-app-admin -n cl-app -p '{"imagePullSecrets": [{"name": "registry-cl-container-registry"}]}'

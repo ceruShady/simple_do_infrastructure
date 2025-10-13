@@ -1,5 +1,6 @@
 ---
-- hosts: kube_master
+- name: Craete ingress controller
+  hosts: kube_master
   serial: 1
   remote_user: "{{ rmt_usr }}"
   vars:
