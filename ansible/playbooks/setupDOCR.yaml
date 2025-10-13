@@ -33,19 +33,17 @@
       ansible.builtin.shell: doctl registry login --expiry-seconds 180
 
     - name: Download DOCR secrets manifest to a file
-      ansible.builtin.shell: doctl registry kubernetes-manifest > {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml
-      args:
-        creates: "{{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml"
+      ansible.builtin.shell: doctl registry kubernetes-manifest > {{ ansible_env.HOME }}/manifests/secrets/createRegistrySecrets.yaml
 
     - name: Replace namespace for the secrets to "cl-app"
       ansible.builtin.replace:
-        path: "{{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml"
+        path: "{{ ansible_env.HOME }}/manifests/secrets/createRegistrySecrets.yaml"
         regexp: "namespace: kube-system"
         replace: "namespace: cl-app"
         backup: true
 
     - name: Apply manifest to create secrets in "cl-app" namespace
-      ansible.builtin.shell: kubectl apply -f {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml
+      ansible.builtin.shell: kubectl apply -f {{ ansible_env.HOME }}/manifests/secrets/createRegistrySecrets.yaml
 
     - name: Set imagePullSecrets for the service account
       ansible.builtin.shell: |
