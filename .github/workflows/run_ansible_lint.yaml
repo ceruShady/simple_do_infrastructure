@@ -1,0 +1,21 @@
+name: Run Ansible lint
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'ansible/*'
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint@main # Or specify a stable version like v6.x.x
+        with:
+          working_directory: "ansible/playbooks"
