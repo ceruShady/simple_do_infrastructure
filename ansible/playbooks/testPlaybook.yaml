@@ -8,7 +8,7 @@
     ansible_python_interpreter: /usr/bin/python3
   tasks:
     - name: apt package update and upgrade
-      become: yes
+      become: true
       ansible.builtin.apt:
         update_cache: yes
         upgrade: yes
@@ -17,7 +17,7 @@
         UCF_FORCE_CONFFOLD: "1"
 
     - name: apt install apt-transport-https curl
-      become: yes
+      become: true
       ansible.builtin.apt:
         pkg:
           - apt-transport-https

@@ -21,7 +21,24 @@
       ansible.builtin.shell: snap connect doctl:dot-docker
 
     - name: Login to DO Container Registry using default authentication context
-      ansible.builtin.shell: doctl registry login --expiry-seconds 300
+      ansible.builtin.shell: doctl registry login --expiry-seconds 180
 
-    - name: Generate DO Container Registry secrets manifest and apply in cluster for pull access
-      ansible.builtin.shell: doctl registry kubernetes-manifest | kubectl apply -f -
+    - name: Download DOCR secrets manifest to a file
+      become: yes
+      ansible.builtin.shell: doctl registry kubernetes-manifest > {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml
+      args:
+        creates: "{{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml"
+
+    - name: Replace namespace for the secrets to "cl-app"
+      ansible.builtin.replace:
+        path: "{{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml"
+        regexp: 'namespace: kube-system'
+        replace: 'namespace: cl-app'
+        backup: yes 
+
+    - name: Apply manifest to create secrets in "cl-app" namespace
+      ansible.builtin.shell: kubectl apply -f {{ ansible_env.HOME }}/manifests/createRegistrySecrets.yaml
+
+    - name: Set imagePullSecrets for the service account 
+      ansible.builtin.shell:  |
+        kubectl patch serviceaccount cl-app-admin -n cl-app -p '{"imagePullSecrets": [{"name": "registry-cl-container-registry"}]}'
