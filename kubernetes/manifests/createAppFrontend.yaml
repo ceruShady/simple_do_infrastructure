@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-frontend-app-deploy
+  namespace: my-application
+  labels:
+    app: app-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-frontend
+  template:
+    metadata:
+      labels:
+        app: app-frontend
+    spec:
+      serviceAccountName: cl-app-admin
+      containers:
+        - name: my-frontend-app-cont
+          image: registry.digitalocean.com/cl-container-registry/test-backend-app:vf-0.1
+          ports:
+            - containerPort: 8081
+          env:
+          - name: MY_ENV
+            value: DUMMY_ENV_VALUE
+          # Example of referencing from secrets
+          # - name: MY_API_KEY
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: my-api-key-secret
+          #       key: api_key
+  

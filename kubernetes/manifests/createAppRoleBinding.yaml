@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cl-app-read-secrets
+  namespace: cl-app
+subjects:
+- kind: ServiceAccount
+  name: cl-app-sa
+  namespace: cl-app
+roleRef:
+  kind: Role 
+  name: cl-app-secrets-reader
