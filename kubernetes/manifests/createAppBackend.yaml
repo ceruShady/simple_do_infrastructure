@@ -3,3 +3,36 @@ kind: Deployment
 metadata:
   name: cl-app-backend-deploy
   namespace: cl-app
+  labels:
+    app: cl-app-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cl-app-backend
+  template:
+    metadata:
+      labels:
+        app: cl-app-backend
+    spec:
+      serviceAccountName: cl-app-sa
+      containers:
+        - name: my-frontend-app-cont
+          image: registry.digitalocean.com/cl-container-registry/test-backend-app:vf-0.1
+          ports:
+            - containerPort: 8081
+          env:
+          - name: NODE_ENV
+            value: "production"
+          - name: LOG_LEVEL
+            value: "http"
+          - name: CLIENTID
+            valueFrom:
+              secretKeyRef:
+                name: cl-app-secrets
+                key: CLIENTID
+          - name: CLIENTSECRET
+            valueFrom:
+              secretKeyRef:
+                name: cl-app-secrets
+                key: CLIENTSECRET
